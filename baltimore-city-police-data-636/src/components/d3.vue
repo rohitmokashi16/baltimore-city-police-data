@@ -12,7 +12,7 @@
 <script>
 import * as d3 from "d3";
 import * as topojson from "topojson";
-import crimeData from "@/assets/crime-data.json";
+import crimeData from "@/assets/crime-data-sample.json";
 import baltimoreCity from "@/assets/baltimore-city-topo.json";
 // import boston from "@/assets/boston_neighborhoods.json";
 
@@ -50,31 +50,29 @@ export default {
 
       var base = svg.append("g");
 
-      var border = svg.append("g");
-
-      var crime = svg.append("g"); 
+      var crime = svg.append("g");
 
       var baltimore = topojson.feature(
         this.baltimoreCity,
         this.baltimoreCity.objects.neighborhoods
-      );
+      ).features;
 
-      var mesh = topojson.mesh(
-        this.baltimoreCity,
-        this.baltimoreCity.objects.neighborhoods
-      );
+      // base
+      //   .append("path")
+      //   .datum(topojson.feature(
+      //   this.baltimoreCity,
+      //   this.baltimoreCity.objects.neighborhoods
+      // ).features)
+      //   .attr("class", "base")
+      //   .attr("d", path);
 
       base
+        .selectAll("path")
+        .data(baltimore)
+        .enter()
         .append("path")
-        .datum(baltimore)
         .attr("class", "base")
         .attr("d", path);
-
-      border
-        .append("path")
-        .datum(mesh)
-        .attr("d", path)
-        .attr("class", "boundary");
 
       crime
         .selectAll("path")
@@ -92,17 +90,17 @@ export default {
 
 <style >
 .base {
-  fill: #ddc;
-}
-.boundary {
-  fill: #ddc;
+  fill: #ddd;
   stroke: #fff;
-  stroke-dasharray: 2, 2;
+  stroke-dasharray: 3, 2;
   stroke-linejoin: round;
 }
 .dot {
   fill: rgb(182, 18, 18);
-  fill-opacity: 0.45;
+  fill-opacity: 0.65;
   /* stroke: #999; */
+}
+.circle {
+  fill: #000;
 }
 </style>
