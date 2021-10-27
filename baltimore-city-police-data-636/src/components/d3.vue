@@ -1,11 +1,9 @@
 <template>
   <div>
-    <div>
-      <div class="row justify-center">
-        <p>D3 impl <br /></p>
-      </div>
-      <div id="arc" />
+    <div class="row justify-center">
+      <p>D3 impl <br /></p>
     </div>
+    <div class="container"></div>
   </div>
 </template>
 
@@ -40,13 +38,33 @@ export default {
         .scale(350000)
         .translate([600, 450]);
 
-      var path = d3.geoPath().projection(projection);
+      var path = d3
+        .geoPath()
+        .projection(projection)
+        .pointRadius((d) => {
+          if (d.type === "Point") {
+            return 3;
+          }
+        });
 
-      var svg = d3
-        .select("div")
+      var container = d3.select(".container");
+      var svg = container
         .append("svg")
         .attr("width", width)
         .attr("height", height);
+
+      var zoom = d3
+        .zoom()
+        .scaleExtent([1, 10])
+        .translateExtent([
+          [-500, -300],
+          [1500, 1000],
+        ])
+        .on("zoom", () => {
+          svg.attr("transform", d3.event.transform);
+        });
+
+      container.call(zoom);
 
       var base = svg.append("g");
 
@@ -79,7 +97,15 @@ export default {
         .data(this.crimeData.features)
         .enter()
         .append("path")
-        .attr("class", "dot")
+        .attr("class", (d) =>
+          d.properties.CrimeCode === "5B" ? "green-dot" : "dot"
+        )
+        .datum((d) => {
+          return {
+            type: "Point",
+            coordinates: [d.properties.Longitude, d.properties.Latitude],
+          };
+        })
         .attr("d", path);
 
       return svg.node();
@@ -90,13 +116,18 @@ export default {
 
 <style >
 .base {
-  fill: #ddd;
+  fill: #999da0;
   stroke: #fff;
   stroke-dasharray: 3, 2;
   stroke-linejoin: round;
 }
 .dot {
-  fill: rgb(182, 18, 18);
+  fill: #ff0000;
+  fill-opacity: 0.65;
+  /* stroke: #999; */
+}
+.green-dot {
+  fill: #138808;
   fill-opacity: 0.65;
   /* stroke: #999; */
 }
