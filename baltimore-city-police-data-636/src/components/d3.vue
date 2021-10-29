@@ -1,5 +1,37 @@
 <template>
   <div>
+   <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+    <div class="row">
+      <div class="col">
+      <b-form-group
+        label="Crime Type:"
+      >
+        <b-form-select v-model="form.crimeType" :options="sampleCrimeTypes"></b-form-select>
+      </b-form-group>
+      </div>
+      <div class="col">
+      <b-form-group
+        label="Neighborhood"
+      >
+        <b-form-select v-model="form.neighborhood" :options="sampleNeighborhoods"></b-form-select>
+      </b-form-group>
+      </div>
+      <div class="col">
+      <b-form-group
+        label="Start Date:"
+      >
+          <b-form-datepicker v-model="form.startDate" class="mb-2"></b-form-datepicker>
+      </b-form-group>
+        </div>
+              <div class="col">
+      <b-form-group
+        label="End Date:"
+      >
+          <b-form-datepicker v-model="form.endDate" class="mb-2"></b-form-datepicker>
+      </b-form-group>
+        </div>
+    </div>
+    </b-form>
     <div class="row justify-center">
       <p>D3 impl <br /></p>
     </div>
@@ -20,7 +52,29 @@ export default {
     return {
       baltimoreCity,
       crimeData,
-    };
+      show: true,
+      form: {
+          crimeType: null,
+          neighborhood: null,
+          startDate: null,
+          endDate: null,    
+      },
+
+      sampleCrimeTypes: [
+        'ASSAULT',
+        'MURDER',
+        'THEFT'
+      ],
+      sampleNeighborhoods:  [
+        'Federal Hill',
+        'Sandtown-Winchester',
+        'Goucher',
+        'Parkville',
+        'Barclay',
+        'Little Italy'
+      ]
+
+    }
   },
   mounted() {
     this.generateArc();
@@ -110,6 +164,20 @@ export default {
 
       return svg.node();
     },
+     onSubmit(event) {
+        event.preventDefault()
+        alert(JSON.stringify(this.form))
+      },
+      onReset(event) {
+        event.preventDefault()
+        // Reset our form values
+        this.form.email = ''
+        // Trick to reset/clear native browser form validation state
+        this.show = false
+        this.$nextTick(() => {
+          this.show = true
+        })
+      }
   },
 };
 </script>
