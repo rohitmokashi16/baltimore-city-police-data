@@ -1,6 +1,6 @@
 <template>
   <div>
-   <b-form @submit="onSubmit" @reset="onReset" v-if="show">
+   <b-form @submit="onSubmit" v-if="show">
     <div class="row">
       <div class="col">
       <b-form-group
@@ -31,6 +31,7 @@
       </b-form-group>
         </div>
     </div>
+    <b-button type="submit" variant="primary">Submit</b-button>
     </b-form>
     <div class="row justify-center">
       <p>D3 impl <br /></p>
@@ -80,6 +81,14 @@ export default {
     this.generateArc();
   },
   methods: {
+
+    onSubmit(event) {
+      event.preventDefault()
+      alert(JSON.stringify(this.form))
+      console.log('do a thing!')
+      console.log(this.form)
+    },
+
     generateArc() {
       var width = 1000;
       var height = 1100;
@@ -163,21 +172,7 @@ export default {
         .attr("d", path);
 
       return svg.node();
-    },
-     onSubmit(event) {
-        event.preventDefault()
-        alert(JSON.stringify(this.form))
-      },
-      onReset(event) {
-        event.preventDefault()
-        // Reset our form values
-        this.form.email = ''
-        // Trick to reset/clear native browser form validation state
-        this.show = false
-        this.$nextTick(() => {
-          this.show = true
-        })
-      }
+    }
   },
 };
 </script>
