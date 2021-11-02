@@ -3,22 +3,18 @@
     <div class="h2 row">
       <p>Baltimore City Police Data CMSC 636</p>
     </div>
-    <img alt="Vue logo" src="./assets/logo.png">
-     <div class="h6 row">
-      <p>Powered By Vue</p>
-    </div>
-    <TabView/>
+    <TabView />
   </div>
 </template>
 
 <script>
-import TabView from './components/TabView.vue'
+import TabView from "./components/TabView.vue";
 export default {
-  name: 'App',
+  name: "App",
   components: {
-    TabView
-  }
-}
+    TabView,
+  },
+};
 </script>
 
 <style>
@@ -28,6 +24,6 @@ export default {
   -moz-osx-font-smoothing: grayscale;
   text-align: center;
   color: #2c3e50;
-  margin-top: 60px;
+  margin-top: 20px;
 }
 </style>
