@@ -1,14 +1,15 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib import rcParams
-
-from env.Include.util.Preprocessing import Preprocessing
+import io
+from Preprocessing import Preprocessing
+import base64
 
 class CrimeVisualizations:
 
 	def __init__(self):
 		"""Initializes a few variables that are used multiple times across different functions."""
-
+		self.string_bytes = io.BytesIO()
 		self.day_of_the_week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
 		self.months_of_year = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
 	
@@ -43,7 +44,10 @@ class CrimeVisualizations:
 		bx_plt.set_ylabel("Day of the week", fontsize = 15)
 		bx_plt.set_xlabel("Total Incidents", fontsize = 15)
 		bx_plt.set_title(title)
-		return fig
+		plt.savefig(self.string_bytes, format='jpg')
+		self.string_bytes.seek(0)
+		plot_base64data = base64.b64encode(self.string_bytes.read())
+		return plot_base64data
 	
 	def district_wise_boxplot(self, dataset, groupby= "Year", lower_year = 1950, upper_year = 2021, is_swarm = False):
 		"""Generates boxplots for total incidents across different districts.
@@ -69,7 +73,10 @@ class CrimeVisualizations:
 		bx_plt.set_ylabel("District", fontsize = 15)
 		bx_plt.set_xlabel("Total Incidents", fontsize = 15)
 		bx_plt.set_title(title)
-		return fig
+		plt.savefig(self.string_bytes, format='jpg')
+		self.string_bytes.seek(0)
+		plot_base64data = base64.b64encode(self.string_bytes.read())
+		return plot_base64data
 	
 	def indoor_outdoor_crimes_trends(self, dataset, groupby = "Year", lower_year = 1950, upper_year = 2021):
 		"""Generates line graphs for inside/outside crimes for different time groupings.
@@ -98,7 +105,10 @@ class CrimeVisualizations:
 		ax.set_ylim([tp['Total_Incidents'].min()//2, tp['Total_Incidents'].max()*1.25])
 		ax.set_ylabel("Total Incidents", fontsize = 15)	
 		ax.set_title(f"Trends of Indoors and Outdoors Crimes by {grouping}")
-		return ax
+		plt.savefig(self.string_bytes, format='jpg')
+		self.string_bytes.seek(0)
+		plot_base64data = base64.b64encode(self.string_bytes.read())
+		return plot_base64data
 
 	def district_crime_bar_charts(self, dataset, lower_year = 1950, upper_year = 2021, inside_outside_flag = False):
 		"""Generates bar charts and stacked bar charts for crimewise incident totals.
@@ -109,6 +119,7 @@ class CrimeVisualizations:
 
 		fig = plt.figure(figsize=(20, 10))
 		self.seaborn_plot_settings()
+		dataset = dataset[['District', 'Total_Incidents', 'Inside_Outside', 'Year']]
 		if not inside_outside_flag:
 			tp = dataset[(dataset['Year'] >= lower_year) & (dataset['Year'] <= upper_year)].groupby(by = ["District"]).count().reset_index()
 			ax = sns.barplot(data = tp, x = "Total_Incidents", y = 'District', order = tp.sort_values("Total_Incidents", ascending = True).District)
@@ -130,38 +141,42 @@ class CrimeVisualizations:
 			plt.xlabel("District")
 			plt.ylabel("Incident Count")
 			plt.title("Stacked Bar Chart of Incident Count by Districts broken into Indoors and Outdoors Incidents")
-		return fig
+		plt.savefig(self.string_bytes, format='jpg')
+		self.string_bytes.seek(0)
+		plot_base64data = base64.b64encode(self.string_bytes.read())
+		return plot_base64data
 		
 
-def buildVisualization():
-	#/ prepros_obj = Preprocessing()
-	#/ prepros_obj.dataset_path = "E:\Courses\CMSC 636 - Data Visualization\Dataset\Baltimore City\Part1_Crime_data.csv"
-	#/ prepros_obj.dataset_read('csv')
+def main():
+	prepros_obj = Preprocessing()
+	prepros_obj.dataset_path = "E:\Courses\CMSC 636 - Data Visualization\Dataset\Baltimore City\Part1_Crime_data.csv"
+	prepros_obj.dataset_read('csv')
 	# print(prepros_obj.final_dataset)
-	#/ prepros_obj.dataset_all_updations()
+	prepros_obj.dataset_all_updations()
 	# print(prepros_obj.final_dataset)
-	#/ print("All the graphs will be generated for the range [lower, upper].")
-	#/ lower, upper = map(int, input("Enter the lower year bound and the upper year bound (separated by a space): ").split())
+	print("All the graphs will be generated for the range [lower, upper].")
+	lower, upper = map(int, input("Enter the lower year bound and the upper year bound (separated by a space): ").split())
 
 	
 
-	#/ crime_viz = CrimeVisualizations()
-	# dotw_year_noswr = crime_viz.day_of_the_week_boxplot(prepros_obj.final_dataset, "Year", lower, upper, False)
-	# dotw_year_swarm = crime_viz.day_of_the_week_boxplot(prepros_obj.final_dataset, "Year", lower, upper, True)
-	# dotw_mnth_noswr = crime_viz.day_of_the_week_boxplot(prepros_obj.final_dataset, "Month_Name", lower, upper, False)
-	# dotw_mnth_swarm = crime_viz.day_of_the_week_boxplot(prepros_obj.final_dataset, "Month_Name", lower, upper, True)
+	crime_viz = CrimeVisualizations()
+	dotw_year_noswr = crime_viz.day_of_the_week_boxplot(prepros_obj.final_dataset, "Year", lower, upper, False)
+	dotw_year_swarm = crime_viz.day_of_the_week_boxplot(prepros_obj.final_dataset, "Year", lower, upper, True)
+	dotw_mnth_noswr = crime_viz.day_of_the_week_boxplot(prepros_obj.final_dataset, "Month_Name", lower, upper, False)
+	dotw_mnth_swarm = crime_viz.day_of_the_week_boxplot(prepros_obj.final_dataset, "Month_Name", lower, upper, True)
 
-	# district_year_noswr = crime_viz.district_wise_boxplot(prepros_obj.final_dataset, "Year", lower, upper, False)
-	# district_year_swarm = crime_viz.district_wise_boxplot(prepros_obj.final_dataset, "Year", lower, upper, True)
-	# district_mnth_noswr = crime_viz.district_wise_boxplot(prepros_obj.final_dataset, "Month_Name", lower, upper, False)
-	# district_mnth_swarm = crime_viz.district_wise_boxplot(prepros_obj.final_dataset, "Month_Name", lower, upper, True)
+	district_year_noswr = crime_viz.district_wise_boxplot(prepros_obj.final_dataset, "Year", lower, upper, False)
+	district_year_swarm = crime_viz.district_wise_boxplot(prepros_obj.final_dataset, "Year", lower, upper, True)
+	district_mnth_noswr = crime_viz.district_wise_boxplot(prepros_obj.final_dataset, "Month_Name", lower, upper, False)
+	district_mnth_swarm = crime_viz.district_wise_boxplot(prepros_obj.final_dataset, "Month_Name", lower, upper, True)
 
-	#/ in_ou_trends_year = crime_viz.indoor_outdoor_crimes_trends(prepros_obj.final_dataset, "Year", lower, upper)
-	#/ in_ou_trends_mnth = crime_viz.indoor_outdoor_crimes_trends(prepros_obj.final_dataset, "Month_Number", lower, upper)
+	in_ou_trends_year = crime_viz.indoor_outdoor_crimes_trends(prepros_obj.final_dataset, "Year", lower, upper)
+	in_ou_trends_mnth = crime_viz.indoor_outdoor_crimes_trends(prepros_obj.final_dataset, "Month_Number", lower, upper)
 
-	# bar_chart_unstckd = crime_viz.district_crime_bar_charts(prepros_obj.final_dataset, lower, upper, False)
-	# bar_chart_stacked = crime_viz.district_crime_bar_charts(prepros_obj.final_dataset, lower, upper, True)
+	bar_chart_unstckd = crime_viz.district_crime_bar_charts(prepros_obj.final_dataset, lower, upper, False)
+	bar_chart_stacked = crime_viz.district_crime_bar_charts(prepros_obj.final_dataset, lower, upper, True)
 
-	#/ plt.show()
-	print('Hit')
-	return 'Hit'
+	# print(len(dotw_mnth_noswr), len(dotw_year_swarm), len(dotw_mnth_noswr), len(dotw_mnth_swarm), len(district_year_noswr), len(district_year_swarm), len(district_mnth_noswr), len(district_mnth_swarm), len(in_ou_trends_year), len(in_ou_trends_mnth), len(bar_chart_unstckd), len(bar_chart_stacked))
+
+if __name__ == "__main__":
+	main()
