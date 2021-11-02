@@ -1,0 +1,5 @@
+{
+    "python.analysis.extraPaths": [
+        "./baltimore-city-police-data-636/server/util"
+    ]
+}

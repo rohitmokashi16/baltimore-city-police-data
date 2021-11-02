@@ -4,17 +4,14 @@
       <p>Baltimore City Police Data CMSC 636</p>
     </div>
     <TabView />
+    <router-view/>
   </div>
 </template>
 
 <script>
-import TabView from "./components/TabView.vue";
 export default {
-  name: "App",
-  components: {
-    TabView,
-  },
-};
+  name: 'App',
+}
 </script>
 
 <style>
