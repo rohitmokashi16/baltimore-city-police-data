@@ -1,6 +1,7 @@
 import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib import rcParams
+import distutils
 import io
 import base64
 
@@ -27,13 +28,14 @@ class CrimeVisualizations:
 		lower_year: lower bound for year filter
 		upper_year: upper bound for year filter
 		is_swarm: flag to enable or disable swarmplot (Boolean)"""
-
+		self.string_bytes = io.BytesIO()
+		
 		fig = plt.figure(figsize=(20, 10))
 		dataset = dataset[['Year', 'Month_Name', 'Total_Incidents', 'Day']]
 		self.seaborn_plot_settings()
 		title = "Incidents by Day of the Week grouped by " + ("month" if groupby.lower() == 'month_name' else "year")
-		tp = dataset[(dataset['Year'] >= lower_year) & (dataset['Year'] <= upper_year)].groupby(by = ["Day", groupby]).count().reset_index()
-		if bool(is_swarm):
+		tp = dataset[(dataset['Year'] >= int(lower_year)) & (dataset['Year'] <= upper_year)].groupby(by = ["Day", groupby]).count().reset_index()
+		if is_swarm == 'True':
 			if groupby.lower() == "month_name":
 				sns.swarmplot(x="Total_Incidents", y="Day", data=tp, hue=groupby, order = self.day_of_the_week, size = 7, hue_order = self.months_of_year)
 			else:
@@ -55,17 +57,15 @@ class CrimeVisualizations:
 		lower_year: lower bound for year filter
 		upper_year: upper bound for year filter
 		is_swarm: flag to enable or disable swarmplot (Boolean)"""
+		self.string_bytes = io.BytesIO()
 
 		fig = plt.figure(figsize=(20, 10))
 		self.seaborn_plot_settings()
 		dataset = dataset[['Year', 'Month_Name', 'Total_Incidents', 'District']]
 		grouping = "Month" if groupby.lower() == 'month_name' else 'year'
 		title = f"Incidents by District grouped by {grouping}"
-		print(upper_year)
-		print(lower_year)
-		print(type(upper_year))
 		tp = dataset[(dataset['Year'] >= int(lower_year)) & (dataset['Year'] <= int(upper_year))].groupby(by = ["District", groupby]).count().reset_index()
-		if bool(is_swarm):
+		if is_swarm == 'True':
 			if groupby.lower() == "month_name":
 				sns.swarmplot(x="Total_Incidents", y="District", data=tp, hue=groupby, size = 7, hue_order = self.months_of_year)
 			else:
@@ -86,11 +86,12 @@ class CrimeVisualizations:
 		groupby: column name to group the dataset by (Year (default) or Month_Name)
 		lower_year: lower bound for year filter
 		upper_year: upper bound for year filter"""
+		self.string_bytes = io.BytesIO()
 
 		fig = plt.figure(figsize=(30, 10))
 		self.seaborn_plot_settings()
 		dataset = dataset[['Year', 'Month_Number','WeekNumber', 'Total_Incidents', 'Inside_Outside']]
-		tp = dataset[(dataset['Year'] >= lower_year) & (dataset['Year'] <= upper_year)].groupby(by = [groupby, 'Inside_Outside']).count().reset_index()
+		tp = dataset[(dataset['Year'] >= int(lower_year)) & (dataset['Year'] <= int(upper_year))].groupby(by = [groupby, 'Inside_Outside']).count().reset_index()
 		ax = sns.lineplot(x = groupby, y='Total_Incidents', data = tp, hue = "Inside_Outside", sort = False)
 		fontsz = 15
 		if groupby.lower() == 'year':
@@ -118,18 +119,19 @@ class CrimeVisualizations:
 		lower_year: lower bound for year filter
 		upper_year: upper bound for year filter
 		inside_outside_flag: if True, generates a stacked bar chart instead of a normal horizontal chart"""
+		self.string_bytes = io.BytesIO()
 
 		fig = plt.figure(figsize=(20, 10))
 		self.seaborn_plot_settings()
 		dataset = dataset[['District', 'Total_Incidents', 'Inside_Outside', 'Year']]
-		if not inside_outside_flag:
-			tp = dataset[(dataset['Year'] >= lower_year) & (dataset['Year'] <= upper_year)].groupby(by = ["District"]).count().reset_index()
+		if not inside_outside_flag == 'True':
+			tp = dataset[(dataset['Year'] >= int(lower_year)) & (dataset['Year'] <= int(upper_year))].groupby(by = ["District"]).count().reset_index()
 			ax = sns.barplot(data = tp, x = "Total_Incidents", y = 'District', order = tp.sort_values("Total_Incidents", ascending = True).District)
 			ax.set_ylabel("District", fontsize = 15)
 			ax.set_xlabel("Incident Count", fontsize = 15)
 			ax.set_title("Bar Chart of Incident Count by Districts")
 		else:
-			tp = dataset[(dataset['Year'] >= lower_year) & (dataset['Year'] <= upper_year)].groupby(by = ["District", "Inside_Outside"]).count().reset_index()
+			tp = dataset[(dataset['Year'] >= int(lower_year)) & (dataset['Year'] <= int(upper_year))].groupby(by = ["District", "Inside_Outside"]).count().reset_index()
 			tp1 = tp.groupby(['District']).sum().sort_values(['Total_Incidents'], ascending = False).reset_index()
 			sort_order = {i: 0 for i in tp1['District'].unique()}
 			val = 0

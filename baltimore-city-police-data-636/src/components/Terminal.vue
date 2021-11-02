@@ -4,7 +4,7 @@
       <p>Baltimore City Police Data CMSC 636</p>
     </div>
      <div class="h6 row">
-      <p>Powered By Vue</p>
+      <p>Powered By Vue, D3, Flask, MatPlotLib, and a prayer</p>
     </div>
     <TabView/>
     </div>
