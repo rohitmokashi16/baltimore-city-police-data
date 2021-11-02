@@ -1,9 +1,7 @@
 <template>
   <div id="app">
     <div class="h2 row">
-      <p>Baltimore City Police Data CMSC 636</p>
     </div>
-    <TabView />
     <router-view/>
   </div>
 </template>

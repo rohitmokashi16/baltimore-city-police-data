@@ -1,5 +1,6 @@
 <template>
   <div>
+    <p> D3 Visualizations </p>
     <b-form @submit="onSubmit" v-if="show">
       <div class="row">
         <div class="col">
@@ -37,9 +38,6 @@
       </div>
       <b-button type="submit" variant="primary">Submit</b-button>
     </b-form>
-    <div class="row justify-center">
-      <p>D3 impl <br /></p>
-    </div>
     <div class="align-center">
     <div class="container"></div>
     </div>
