@@ -5,32 +5,39 @@
     <div class="row">
       <div class="col">
       <b-form-group
-        label="Crime Type:"
+        label="Chart Domain:"
       >
-        <b-form-select v-model="form.crimeType" :options="sampleCrimeTypes"></b-form-select>
+        <b-form-select v-model="form.chartDomain" :options="chartTypes"></b-form-select>
       </b-form-group>
       </div>
       <div class="col">
       <b-form-group
-        label="Neighborhood"
+        label="Group Results By:"
       >
-        <b-form-select v-model="form.neighborhood" :options="sampleNeighborhoods"></b-form-select>
+        <b-form-select v-model="form.groupBy" :options="['Month_Name', 'Year']"></b-form-select>
       </b-form-group>
       </div>
       <div class="col">
       <b-form-group
-        label="Start Date:"
+        label="Start Year:"
       >
-          <b-form-datepicker v-model="form.startDate" class="mb-2"></b-form-datepicker>
+              <b-form-select v-model="form.startYear" :options="getAvailableYears()"></b-form-select>
       </b-form-group>
-        </div>
-              <div class="col">
+      </div>
+        <div class="col">
       <b-form-group
-        label="End Date:"
+        label="End Year:"
       >
-          <b-form-datepicker v-model="form.endDate" class="mb-2"></b-form-datepicker>
+        <b-form-select v-model="form.endYear" :options="getAvailableYears()"></b-form-select>
       </b-form-group>
-        </div>
+      </div>
+         <div class="col">
+      <b-form-group
+        label="Swarm Plot:"
+      >
+        <b-form-select v-model="form.swarm" :options="['True', 'False']"></b-form-select>
+      </b-form-group>
+      </div>
     </div>
     <b-button type="submit" variant="primary">Submit</b-button>
     </b-form>
@@ -48,15 +55,35 @@ export default {
             imageFromPython: null,
             show: true,
             form: {
-                crimeType: null,
-                neighborhood: null,
-                startDate: null,
-                endDate: null,    
-            }
+                chartDomain: null,
+                groupBy: null,
+                startYear: null,
+                endYear: null,   
+                swarm: false
+            },
+            chartTypes: [
+                "Crimes by Day of Week (Box Plot)",
+                "Crimes by District (Box Plot)",
+                "Crimes by District (Bar Chart)",
+                "Crime Trend by being Indoors/Outdoors",
+            ],
+            chartRoutes: [
+                "http://localhost:5000/v/day_of_the_week_boxplot",
+                "http://localhost:5000/v/district_wise_boxplot",
+                "http://localhost:5000/v/district_crime_bar_charts",
+                "http://localhost:5000/v/indoor_outdoor_crimes_trends"
+            ]
         }
     },
     async created () {
-        await this.getChart(null, "Year", 2016, 2017, false)
+        // await this.getChart(null, "Year", 2016, 2017, false)
+    },
+    watch: {
+        imageFromPython: {
+            handler () {
+                console.log('changed')
+            }
+        }
     },
     methods: {
         getImage() {
@@ -68,10 +95,11 @@ export default {
             .catch((error) => {
              // eslint-disable-next-line
             console.error(error);
-        });
+        })
         },
         getChart(type, ym, lower, upper, swarm) {
-            const path = 'http://localhost:5000/v/district_wise_boxplot';
+            const path = type;
+            this.imageFromPython = JSON.parse(JSON.stringify(''))
             axios.get(path, {params: {
                 ym: ym,
                 lower: lower,
@@ -89,7 +117,20 @@ export default {
          },
         onSubmit(event) {
             event.preventDefault()
+            this.getChart(
+                this.chartRoutes[this.chartTypes.indexOf(this.form.chartDomain)],
+                this.form.groupBy,
+                this.form.startYear,
+                this.form.endYear,
+                this.form.swarm)
         },
+        getAvailableYears() {
+            let returning = []
+            for (let i = 1963; i < 2021; i++) {
+                returning.push(i)
+            }
+            return returning
+        }
     }
 }
 </script>
