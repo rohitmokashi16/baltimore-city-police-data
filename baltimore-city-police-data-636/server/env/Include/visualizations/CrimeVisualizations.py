@@ -2,7 +2,6 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 from matplotlib import rcParams
 import io
-from Preprocessing import Preprocessing
 import base64
 
 class CrimeVisualizations:
@@ -34,7 +33,7 @@ class CrimeVisualizations:
 		self.seaborn_plot_settings()
 		title = "Incidents by Day of the Week grouped by " + ("month" if groupby.lower() == 'month_name' else "year")
 		tp = dataset[(dataset['Year'] >= lower_year) & (dataset['Year'] <= upper_year)].groupby(by = ["Day", groupby]).count().reset_index()
-		if is_swarm:
+		if bool(is_swarm):
 			if groupby.lower() == "month_name":
 				sns.swarmplot(x="Total_Incidents", y="Day", data=tp, hue=groupby, order = self.day_of_the_week, size = 7, hue_order = self.months_of_year)
 			else:
@@ -62,8 +61,11 @@ class CrimeVisualizations:
 		dataset = dataset[['Year', 'Month_Name', 'Total_Incidents', 'District']]
 		grouping = "Month" if groupby.lower() == 'month_name' else 'year'
 		title = f"Incidents by District grouped by {grouping}"
-		tp = dataset[(dataset['Year'] >= 2014) & (dataset['Year'] <= 2021)].groupby(by = ["District", groupby]).count().reset_index()
-		if is_swarm:
+		print(upper_year)
+		print(lower_year)
+		print(type(upper_year))
+		tp = dataset[(dataset['Year'] >= int(lower_year)) & (dataset['Year'] <= int(upper_year))].groupby(by = ["District", groupby]).count().reset_index()
+		if bool(is_swarm):
 			if groupby.lower() == "month_name":
 				sns.swarmplot(x="Total_Incidents", y="District", data=tp, hue=groupby, size = 7, hue_order = self.months_of_year)
 			else:
@@ -88,7 +90,7 @@ class CrimeVisualizations:
 		fig = plt.figure(figsize=(30, 10))
 		self.seaborn_plot_settings()
 		dataset = dataset[['Year', 'Month_Number','WeekNumber', 'Total_Incidents', 'Inside_Outside']]
-		tp = dataset[(dataset['Year'] >= 2014) & (dataset['Year'] <= 2021)].groupby(by = [groupby, 'Inside_Outside']).count().reset_index()
+		tp = dataset[(dataset['Year'] >= lower_year) & (dataset['Year'] <= upper_year)].groupby(by = [groupby, 'Inside_Outside']).count().reset_index()
 		ax = sns.lineplot(x = groupby, y='Total_Incidents', data = tp, hue = "Inside_Outside", sort = False)
 		fontsz = 15
 		if groupby.lower() == 'year':
@@ -127,7 +129,7 @@ class CrimeVisualizations:
 			ax.set_xlabel("Incident Count", fontsize = 15)
 			ax.set_title("Bar Chart of Incident Count by Districts")
 		else:
-			tp = dataset[(dataset['Year'] >= 2014) & (dataset['Year'] <= 2021)].groupby(by = ["District", "Inside_Outside"]).count().reset_index()
+			tp = dataset[(dataset['Year'] >= lower_year) & (dataset['Year'] <= upper_year)].groupby(by = ["District", "Inside_Outside"]).count().reset_index()
 			tp1 = tp.groupby(['District']).sum().sort_values(['Total_Incidents'], ascending = False).reset_index()
 			sort_order = {i: 0 for i in tp1['District'].unique()}
 			val = 0
@@ -145,11 +147,10 @@ class CrimeVisualizations:
 		self.string_bytes.seek(0)
 		plot_base64data = base64.b64encode(self.string_bytes.read())
 		return plot_base64data
-		
 
-def main():
+def test():
 	prepros_obj = Preprocessing()
-	prepros_obj.dataset_path = "E:\Courses\CMSC 636 - Data Visualization\Dataset\Baltimore City\Part1_Crime_data.csv"
+	prepros_obj.dataset_path = "./env/Include/sample/Part1_Crime_data.csv"
 	prepros_obj.dataset_read('csv')
 	# print(prepros_obj.final_dataset)
 	prepros_obj.dataset_all_updations()
@@ -178,5 +179,3 @@ def main():
 
 	# print(len(dotw_mnth_noswr), len(dotw_year_swarm), len(dotw_mnth_noswr), len(dotw_mnth_swarm), len(district_year_noswr), len(district_year_swarm), len(district_mnth_noswr), len(district_mnth_swarm), len(in_ou_trends_year), len(in_ou_trends_mnth), len(bar_chart_unstckd), len(bar_chart_stacked))
 
-if __name__ == "__main__":
-	main()
