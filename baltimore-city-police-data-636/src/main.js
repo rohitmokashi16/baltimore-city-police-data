@@ -6,6 +6,10 @@ import { BootstrapVue, IconsPlugin } from 'bootstrap-vue'
 import 'bootstrap/dist/css/bootstrap.css'
 import 'bootstrap-vue/dist/bootstrap-vue.css'
 import 'vue-tableau'
+import VueRouter from 'vue-router'
+import router from './router'
+
+Vue.use(VueRouter)
 
 Vue.config.productionTip = false
 // Make BootstrapVue available throughout your project
@@ -15,4 +19,5 @@ Vue.use(IconsPlugin)
 
 new Vue({
   render: h => h(App),
+  router: router
 }).$mount('#app')

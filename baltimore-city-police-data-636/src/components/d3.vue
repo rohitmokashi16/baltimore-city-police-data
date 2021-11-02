@@ -40,7 +40,9 @@
     <div class="row justify-center">
       <p>D3 impl <br /></p>
     </div>
+    <div class="align-center">
     <div class="container"></div>
+    </div>
   </div>
 </template>
 
