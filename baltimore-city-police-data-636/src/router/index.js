@@ -1,7 +1,7 @@
 import Vue from 'vue';
 import Router from 'vue-router';
 import Ping from '../components/Ping.vue';
-
+import Terminal from '../components/Terminal.vue';
 Vue.use(Router);
 
 export default new Router({
@@ -13,5 +13,10 @@ export default new Router({
       name: 'Ping',
       component: Ping,
     },
+    {
+      path: '/*',
+      name: 'Home',
+      component: Terminal
+    }
   ],
 });

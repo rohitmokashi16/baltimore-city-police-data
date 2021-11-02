@@ -36,7 +36,9 @@
     <div class="row justify-center">
       <p>D3 impl <br /></p>
     </div>
+    <div class="align-center">
     <div class="container"></div>
+    </div>
   </div>
 </template>
 
@@ -62,9 +64,20 @@ export default {
       },
 
       sampleCrimeTypes: [
-        'ASSAULT',
-        'MURDER',
-        'THEFT'
+        'AGG. ASSAULT',
+        'ARSON',
+        'AUTO THEFT',
+        'BURGLARY',
+        'COMMON ASSAULT',
+        'HOMICIDE',
+        'LARCENY',
+        'LARCENY FROM AUTO',
+        'RAPE',
+        'ROBBERY - CARJACKING',
+        'ROBBERY - COMMERCIAL',
+        'ROBBERY - RESIDENCE',
+        'ROBBERY - STREET',
+        'SHOOTING',
       ],
       sampleNeighborhoods:  [
         'Federal Hill',
