@@ -35,7 +35,9 @@ class CrimeVisualizations:
 		self.seaborn_plot_settings()
 		title = "Incidents by Day of the Week grouped by " + ("month" if groupby.lower() == 'month_name' else "year")
 		tp = dataset[(dataset['Year'] >= int(lower_year)) & (dataset['Year'] <= upper_year)].groupby(by = ["Day", groupby]).count().reset_index()
-		if is_swarm == 'True':
+		print(is_swarm)
+		print(type(is_swarm))
+		if is_swarm:
 			if groupby.lower() == "month_name":
 				sns.swarmplot(x="Total_Incidents", y="Day", data=tp, hue=groupby, order = self.day_of_the_week, size = 7, hue_order = self.months_of_year)
 			else:
@@ -65,7 +67,7 @@ class CrimeVisualizations:
 		grouping = "Month" if groupby.lower() == 'month_name' else 'year'
 		title = f"Incidents by District grouped by {grouping}"
 		tp = dataset[(dataset['Year'] >= int(lower_year)) & (dataset['Year'] <= int(upper_year))].groupby(by = ["District", groupby]).count().reset_index()
-		if is_swarm == 'True':
+		if is_swarm:
 			if groupby.lower() == "month_name":
 				sns.swarmplot(x="Total_Incidents", y="District", data=tp, hue=groupby, size = 7, hue_order = self.months_of_year)
 			else:
@@ -90,6 +92,10 @@ class CrimeVisualizations:
 
 		fig = plt.figure(figsize=(30, 10))
 		self.seaborn_plot_settings()
+		
+		if groupby == 'Month_Name':
+  			groupby = 'Month_Number'
+
 		dataset = dataset[['Year', 'Month_Number','WeekNumber', 'Total_Incidents', 'Inside_Outside']]
 		tp = dataset[(dataset['Year'] >= int(lower_year)) & (dataset['Year'] <= int(upper_year))].groupby(by = [groupby, 'Inside_Outside']).count().reset_index()
 		ax = sns.lineplot(x = groupby, y='Total_Incidents', data = tp, hue = "Inside_Outside", sort = False)
@@ -124,7 +130,7 @@ class CrimeVisualizations:
 		fig = plt.figure(figsize=(20, 10))
 		self.seaborn_plot_settings()
 		dataset = dataset[['District', 'Total_Incidents', 'Inside_Outside', 'Year']]
-		if not inside_outside_flag == 'True':
+		if not inside_outside_flag:
 			tp = dataset[(dataset['Year'] >= int(lower_year)) & (dataset['Year'] <= int(upper_year))].groupby(by = ["District"]).count().reset_index()
 			ax = sns.barplot(data = tp, x = "Total_Incidents", y = 'District', order = tp.sort_values("Total_Incidents", ascending = True).District)
 			ax.set_ylabel("District", fontsize = 15)

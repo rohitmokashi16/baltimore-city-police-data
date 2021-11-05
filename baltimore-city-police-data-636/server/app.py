@@ -43,23 +43,23 @@ def v_day_of_the_week_boxplot():
 @app.route('/v/district_wise_boxplot', methods=['GET'])
 def v_district_wise_boxplot():
     year_or_month = request.args.get('ym')
-    lower = request.args.get('lower')
-    upper = request.args.get('upper')
-    swarm = request.args.get('swarm')
+    lower = int(request.args.get('lower'))
+    upper = int(request.args.get('upper'))
+    swarm = bool(request.args.get('swarm'))
     return v.district_wise_boxplot(data, year_or_month, lower, upper, swarm)
 
 @app.route('/v/indoor_outdoor_crimes_trends', methods=['GET'])
 def indoor_outdoor_crimes_trends():
     year_or_month = request.args.get('ym')
-    lower = request.args.get('lower')
-    upper = request.args.get('upper')
+    lower = int(request.args.get('lower'))
+    upper = int(request.args.get('upper'))
     return v.indoor_outdoor_crimes_trends(data, year_or_month, lower, upper)
 
 @app.route('/v/district_crime_bar_charts', methods=['GET'])
 def district_crime_bar_charts():
-    lower = request.args.get('lower')
-    upper = request.args.get('upper')
-    swarm = request.args.get('swarm')
+    lower = int(request.args.get('lower'))
+    upper = int(request.args.get('upper'))
+    swarm = bool(request.args.get('swarm'))
     return v.district_crime_bar_charts(data, lower, upper, swarm)
 
 if __name__ == '__main__':

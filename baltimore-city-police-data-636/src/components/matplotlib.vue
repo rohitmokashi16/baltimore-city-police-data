@@ -41,7 +41,9 @@
     </div>
     <b-button type="submit" variant="primary">Submit</b-button>
     </b-form>
+    <div class="row">
        <b-img v-if="imageFromPython" :src="'data:image/png;base64,'+ imageFromPython"/>
+    </div>
     </div>
 </template>
 
@@ -104,7 +106,7 @@ export default {
                 ym: ym,
                 lower: lower,
                 upper: upper,
-                swarm: swarm
+                swarm: swarm === 'True' ? "True" : ""
             },
             host: 'localhost:8080'})
                 .then((res) => {
