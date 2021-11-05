@@ -1,0 +1,2 @@
+web: npm run serve
+web: python ./server/app.py
