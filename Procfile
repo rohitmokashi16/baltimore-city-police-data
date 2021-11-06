@@ -1,2 +1,2 @@
-web: python app.py
+web: gunicorn gettingstarted.wsgi
 app: npm run serve
