@@ -7,7 +7,7 @@ from env.Include.visualizations.ImageReturn import returnImage
 DEBUG = True
 
 # instantiate the app
-app = Flask(__name__)
+app = Flask(__name__, static_folder='../client/dist/', static_url_path='/')
 app.config.from_object(__name__)
 
 # enable CORS
