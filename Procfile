@@ -1,2 +1,2 @@
-web: gunicorn env:app
+web: gunicorn app:app
 app: npm run serve
