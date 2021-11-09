@@ -22,6 +22,12 @@ data = prepros_obj.final_dataset
 v = CrimeVisualizations()
 
 
+@app.route("/", defaults={"path": ""})
+@app.route("/<string:path>")
+@app.route("/<path:path>")
+def index(path):
+    return app.send_static_file("index.html")
+
 # sanity check route
 @app.route('/ping', methods=['GET'])
 def ping_pong():
