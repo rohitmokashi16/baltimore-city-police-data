@@ -6,7 +6,7 @@ Vue.use(Router);
 
 export default new Router({
   mode: 'history',
-  base: 'vis636-baltcity-police.herokuapp.com',
+  base: process.env.BASE_URL,
   routes: [
     {
       path: '/ping',
