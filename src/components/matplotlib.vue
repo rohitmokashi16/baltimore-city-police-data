@@ -1,6 +1,8 @@
 <template>
     <div>
       <p> Python Visualizations </p>
+      <br>
+      <p>This is fragile. Make sure that start date is before end date. Generally, more reliable data points are from 2014 onwards.</p>
          <b-form @submit="onSubmit" v-if="show">
     <div class="row">
       <div class="col">

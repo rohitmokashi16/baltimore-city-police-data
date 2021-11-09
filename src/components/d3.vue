@@ -19,7 +19,7 @@
             ></b-form-select>
           </b-form-group>
         </div>
-        <div class="col">
+        <!-- <div class="col">
           <b-form-group label="Start Date:">
             <b-form-datepicker
               v-model="form.startDate"
@@ -34,7 +34,7 @@
               class="mb-2"
             ></b-form-datepicker>
           </b-form-group>
-        </div>
+        </div> -->
       </div>
       <b-button type="submit" variant="primary">Submit</b-button>
     </b-form>
