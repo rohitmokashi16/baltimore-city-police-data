@@ -16,7 +16,7 @@ export default {
   },
   methods: {
     getMessage() {
-      const path = 'http://localhost:5000/ping';
+      const path = 'https://vis636-baltcity-police.herokuapp.com/ping';
       axios.get(path)
         .then((res) => {
           this.msg = res.data;
