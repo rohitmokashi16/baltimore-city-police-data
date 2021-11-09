@@ -70,10 +70,10 @@ export default {
                 "Crime Trend by being Indoors/Outdoors",
             ],
             chartRoutes: [
-                "vis636-baltcity-police.herokuapp.com/v/day_of_the_week_boxplot",
-                "vis636-baltcity-police.herokuapp.com/v/district_wise_boxplot",
-                "vis636-baltcity-police.herokuapp.com/v/district_crime_bar_charts",
-                "vis636-baltcity-police.herokuapp.com/v/indoor_outdoor_crimes_trends"
+                "/v/day_of_the_week_boxplot",
+                "/v/district_wise_boxplot",
+                "/v/district_crime_bar_charts",
+                "/v/indoor_outdoor_crimes_trends"
             ]
         }
     },
@@ -89,7 +89,7 @@ export default {
     },
     methods: {
         getImage() {
-            const path = 'vis636-baltcity-police.herokuapp.com/vue';
+            const path = '/vue';
             axios.get(path)
                 .then((res) => {
                 this.imageFromPython = res.data;
@@ -108,7 +108,7 @@ export default {
                 upper: upper,
                 swarm: swarm === 'True' ? "True" : ""
             },
-            host: 'vis636-baltcity-police.herokuapp.com'})
+            host: process.env.BASE_URL})
                 .then((res) => {
                 this.imageFromPython = res.data;
             })
@@ -128,7 +128,7 @@ export default {
         },
         getAvailableYears() {
             let returning = []
-            for (let i = 1963; i < 2021; i++) {
+            for (let i = 2021; i > 2010; i--) {
                 returning.push(i)
             }
             return returning
