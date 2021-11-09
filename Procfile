@@ -1,2 +1,2 @@
-web: gunicorn baltimore-city-police-data-636:app
+web: gunicorn env:app
 app: npm run serve
