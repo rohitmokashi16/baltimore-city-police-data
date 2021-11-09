@@ -3,8 +3,9 @@
   "version": "0.1.0",
   "private": true,
   "scripts": {
+    "start": "gunicorn app:app",
     "serve": "vue-cli-service serve",
-    "build": "vue-cli-service build",
+    "build": "cd baltimore-city-police-data-636 && npm run build",
     "lint": "vue-cli-service lint"
   },
   "dependencies": {
