@@ -70,10 +70,10 @@ export default {
                 "Crime Trend by being Indoors/Outdoors",
             ],
             chartRoutes: [
-                "https://vis636-baltcity-police.herokuapp.com/v/day_of_the_week_boxplot",
-                "https://vis636-baltcity-police.herokuapp.com/v/district_wise_boxplot",
-                "https://vis636-baltcity-police.herokuapp.com/v/district_crime_bar_charts",
-                "https://vis636-baltcity-police.herokuapp.com/v/indoor_outdoor_crimes_trends"
+                "vis636-baltcity-police.herokuapp.com/v/day_of_the_week_boxplot",
+                "vis636-baltcity-police.herokuapp.com/v/district_wise_boxplot",
+                "vis636-baltcity-police.herokuapp.com/v/district_crime_bar_charts",
+                "vis636-baltcity-police.herokuapp.com/v/indoor_outdoor_crimes_trends"
             ]
         }
     },
@@ -89,7 +89,7 @@ export default {
     },
     methods: {
         getImage() {
-            const path = 'https://vis636-baltcity-police.herokuapp.com/vue';
+            const path = 'vis636-baltcity-police.herokuapp.com/vue';
             axios.get(path)
                 .then((res) => {
                 this.imageFromPython = res.data;
@@ -108,7 +108,7 @@ export default {
                 upper: upper,
                 swarm: swarm === 'True' ? "True" : ""
             },
-            host: 'https://vis636-baltcity-police.herokuapp.com/'})
+            host: 'vis636-baltcity-police.herokuapp.com'})
                 .then((res) => {
                 this.imageFromPython = res.data;
             })
