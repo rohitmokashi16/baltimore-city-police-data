@@ -30,13 +30,11 @@ class CrimeVisualizations:
 		is_swarm: flag to enable or disable swarmplot (Boolean)"""
 		self.string_bytes = io.BytesIO()
 		
-		fig = plt.figure(figsize=(20, 10))
+		plt.figure(figsize=(20, 10))
 		dataset = dataset[['Year', 'Month_Name', 'Total_Incidents', 'Day']]
 		self.seaborn_plot_settings()
 		title = "Incidents by Day of the Week grouped by " + ("month" if groupby.lower() == 'month_name' else "year")
 		tp = dataset[(dataset['Year'] >= int(lower_year)) & (dataset['Year'] <= upper_year)].groupby(by = ["Day", groupby]).count().reset_index()
-		print(is_swarm)
-		print(type(is_swarm))
 		if is_swarm:
 			if groupby.lower() == "month_name":
 				sns.swarmplot(x="Total_Incidents", y="Day", data=tp, hue=groupby, order = self.day_of_the_week, size = 7, hue_order = self.months_of_year)
@@ -61,7 +59,7 @@ class CrimeVisualizations:
 		is_swarm: flag to enable or disable swarmplot (Boolean)"""
 		self.string_bytes = io.BytesIO()
 
-		fig = plt.figure(figsize=(20, 10))
+		plt.figure(figsize=(20, 10))
 		self.seaborn_plot_settings()
 		dataset = dataset[['Year', 'Month_Name', 'Total_Incidents', 'District']]
 		grouping = "Month" if groupby.lower() == 'month_name' else 'year'
@@ -90,7 +88,7 @@ class CrimeVisualizations:
 		upper_year: upper bound for year filter"""
 		self.string_bytes = io.BytesIO()
 
-		fig = plt.figure(figsize=(30, 10))
+		plt.figure(figsize=(30, 10))
 		self.seaborn_plot_settings()
 		
 		if groupby == 'Month_Name':
@@ -127,7 +125,7 @@ class CrimeVisualizations:
 		inside_outside_flag: if True, generates a stacked bar chart instead of a normal horizontal chart"""
 		self.string_bytes = io.BytesIO()
 
-		fig = plt.figure(figsize=(20, 10))
+		plt.figure(figsize=(20, 10))
 		self.seaborn_plot_settings()
 		dataset = dataset[['District', 'Total_Incidents', 'Inside_Outside', 'Year']]
 		if not inside_outside_flag:
