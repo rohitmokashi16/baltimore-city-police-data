@@ -1,7 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from env.Include.visualizations.CrimeVisualizations import CrimeVisualizations
-from env.Include.sample.Preprocessing import Preprocessing
+from Include.visualizations.CrimeVisualizations import CrimeVisualizations
+from Include.sample.Preprocessing import Preprocessing
 from env.Include.visualizations.ImageReturn import returnImage
 from sqlalchemy import create_engine
 
