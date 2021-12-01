@@ -13,6 +13,17 @@ class Preprocessing:
 		# Replace root, IP address, and dv_testdb with your respective credentials
 		sqlEngine = create_engine('mysql+pymysql://root:password@127.0.0.1/crime_data', pool_recycle=3600)
 		self.connection = sqlEngine.connect()
+
+	def dataset_read(self, year1, year2):
+		"""Read dataset from MySQL for the specific year range.
+		year1: integer, lower bound of year
+		year2: integer, upper bound of year
+		Dataset filtered for the range [year1, year2]"""
+
+		sql_query = f'select * from crime_data where year(CrimeDateTime) between {year1} and {year2}'
+		self.final_dataset = pd.read_sql(sql_query, con = self.connection)
+		print(f"Records between years {year1} and {year2} fetched.")
+		
 	
 	def dataset_add_year(self, dataset, column_name):
 		"""Extract year from the given datetime column and add a new column with that data.
