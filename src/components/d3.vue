@@ -1,6 +1,6 @@
 <template>
   <div>
-    <p> D3 Visualizations </p>
+    <p>D3 Visualizations</p>
     <b-form @submit="onSubmit" v-if="show">
       <div class="row">
         <div class="col">
@@ -19,7 +19,7 @@
             ></b-form-select>
           </b-form-group>
         </div>
-        <!-- <div class="col">
+        <div class="col">
           <b-form-group label="Start Date:">
             <b-form-datepicker
               v-model="form.startDate"
@@ -34,12 +34,15 @@
               class="mb-2"
             ></b-form-datepicker>
           </b-form-group>
-        </div> -->
+        </div>
       </div>
       <b-button type="submit" variant="primary">Submit</b-button>
     </b-form>
     <div class="align-center">
-    <div class="container"></div>
+      <div class="container"></div>
+    </div>
+    <div id="neighborhood-map" class="align-center">
+      
     </div>
   </div>
 </template>
@@ -51,12 +54,17 @@ import crimeData from "@/assets/crime-data-sample.json";
 import baltimoreCity from "@/assets/baltimore-city-topo.json";
 import baltimoreCityGeo from "@/assets/baltimore-city.json";
 import constData from "../constants/d3Constants.js";
+import L from "leaflet";
+import "leaflet/dist/leaflet.css";
+import "leaflet/dist/leaflet.js";
+// import cookie from "vue-cookies";
 // import boston from "@/assets/boston_neighborhoods.json";
 
 export default {
   name: "D3Impl",
   data() {
     return {
+      fullView: true,
       baltimoreCity,
       baltimoreCityGeo,
       crimeData,
@@ -94,7 +102,7 @@ export default {
             );
           }
         });
-        console.log(tempCrimeData);
+        // console.log(tempCrimeData);
       }
       this.generateArc(tempCrimeData);
     },
@@ -131,19 +139,6 @@ export default {
         .append("div")
         .attr("class", "hidden tooltip");
 
-      // var zoom = d3
-      //   .zoom()
-      //   .scaleExtent([1, 10])
-      //   .translateExtent([
-      //     [-500, -300],
-      //     [1500, 1000],
-      //   ])
-      //   .on("zoom", () => {
-      //     svg.attr("transform", d3.event.transform);
-      //   });
-
-      // container.call(zoom);
-
       let base = svg.append("g");
 
       // var labels = svg.append("g");
@@ -155,28 +150,12 @@ export default {
         this.baltimoreCity.objects.neighborhoods
       );
 
-      // var mouseOver = (event) => {
-      //   event.preventDefault()
-      //   d3.selectAll(".base")
-      //     .transition()
-      //     .duration(200)
-      //     .style("opacity", 0.5);
-      // };
-
-      // var mouseLeave = (event) => {
-      //   event.preventDefault()
-      //   d3.selectAll(".base")
-      //     .transition()
-      //     .duration(200)
-      //     .style("opacity", 0.8);
-
-      // };
-
       base
         .selectAll(".province")
         .data(baltimore.features)
         .enter()
         .append("path")
+        .attr("id", (d) => d.properties.LABEL)
         .attr("class", (d) => {
           return (
             "province " +
@@ -186,7 +165,7 @@ export default {
         .attr("d", path)
         .on("mouseover", (event, d) => {
           event.preventDefault();
-          var mouse = d3.pointer(event, svg.node()).map((d) => {
+          let mouse = d3.pointer(event, svg.node()).map((d) => {
             return parseInt(d);
           });
 
@@ -201,6 +180,10 @@ export default {
         .on("mouseout", (event) => {
           event.preventDefault();
           tooltip.classed("hidden", true);
+        })
+        .on("click", (event) => {
+          event.preventDefault();
+          this.onSelect(event.target.id);
         });
 
       // labels
@@ -252,7 +235,7 @@ export default {
         .attr("d", path)
         .on("mouseover", (event, d) => {
           event.preventDefault();
-          var mouse = d3.pointer(event, svg.node()).map((d) => {
+          let mouse = d3.pointer(event, svg.node()).map((d) => {
             return parseInt(d);
           });
 
@@ -271,11 +254,93 @@ export default {
 
       return svg.node();
     },
+
+    onSelect(neighborhoodName) {
+      // d3.selectAll("svg").remove();
+      // d3.selectAll(".hidden").remove();
+      // d3.selectAll("div.tooltip").remove();
+      // this.fullView = false;
+      console.log(neighborhoodName)
+      document.getElementById("neighborhood-map").innerHTML = '<div id="neighborhood-container"></div>';
+      let tempCrimeData = JSON.parse(JSON.stringify(this.crimeData.features));
+      tempCrimeData = tempCrimeData.filter((crime) => {
+        if (crime.properties.Neighborhood) {
+          return (
+            crime.properties.Neighborhood.toLowerCase() ===
+            neighborhoodName.toLowerCase()
+          );
+        }
+      });
+
+      let map = L.map("neighborhood-container"),
+        bwOsmURL = "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
+        osmAttrs =
+          "Map data © <a href='http://openstreetmap.org'>OpenStreetMap</a>";
+
+      map.on("load", function() {
+        setTimeout(() => {
+          map.invalidateSize();
+        }, 1);
+      });
+
+      let osmTiles = new L.TileLayer(bwOsmURL, {
+        minZoom: 11,
+        maxZoom: 17,
+        attribution: osmAttrs,
+      });
+
+      // Center view on ~NYC
+      let neighborhoodCenter = new L.LatLng(39.3, -76.6);
+
+      map.setView(neighborhoodCenter, 11); // latlng, zoom level
+      map.addLayer(osmTiles);
+
+      function polystyle() {
+        return {
+          fillColor: "#dedede",
+          weight: 1,
+          opacity: 1,
+          color: "#8a8a8a", //Outline color
+          fillOpacity: 0.4,
+        };
+      }
+
+      const polyData = baltimoreCityGeo.features.filter(
+        (neighborhood) =>
+          neighborhood.properties.NBRDESC.toLowerCase() ===
+          neighborhoodName.toLowerCase()
+      );
+      L.geoJson(polyData, { style: polystyle }).addTo(map);
+
+      L.geoJson(tempCrimeData, {
+        style: () => {
+          return {
+            color: "#808080",
+            opacity: 1,
+            radius: 0.8,
+            fillColor: "#dedede",
+            fillOpacity: 0.7,
+          };
+        },
+        onEachFeature: (feature, layer) => {
+          layer.bindPopup(feature.properties.Location);
+        },
+        pointToLayer: (feature, latlng) => {
+          console.log(feature.properties.Location);
+          return L.circleMarker(latlng);
+        },
+      }).addTo(map);
+    },
   },
 };
 </script>
 
 <style>
+#neighborhood-container {
+  display: inline-block;
+  height: 450px;
+  width: 700px;
+}
 .base {
   fill: #dedede;
   stroke: #fff;
@@ -284,9 +349,9 @@ export default {
 }
 
 .province {
-  fill: #dedede;
+  fill: #000;
   stroke: #fff;
-  stroke-dasharray: 3, 2;
+  stroke-dasharray: 0.5, 3;
   stroke-linejoin: round;
 }
 .province:hover {
