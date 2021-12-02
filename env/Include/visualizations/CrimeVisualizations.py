@@ -58,6 +58,9 @@ class CrimeVisualizations:
 		is_swarm: flag to enable or disable swarmplot (Boolean)
 		*neighborhood_name: contains name of ONE neighborhood (string as first and only element of tuple)"""
 
+		if groupby is None:
+			groupby = "Year"
+
 		# Activate figure and update settings
 		fig = plt.figure(figsize=(20, 10))
 		self.seaborn_plot_settings()

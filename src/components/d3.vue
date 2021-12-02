@@ -1,49 +1,18 @@
 <template>
   <div>
-    <p>D3 Visualizations</p>
-    <b-form @submit="onSubmit" v-if="show">
-      <div class="row">
-        <div class="col">
-          <b-form-group label="Crime Type:">
-            <b-form-select
-              v-model="form.crimeType"
-              :options="crimeTypes"
-            ></b-form-select>
-          </b-form-group>
-        </div>
-        <div class="col">
-          <b-form-group label="Neighborhood">
-            <b-form-select
-              v-model="form.neighborhood"
-              :options="neighborhoods"
-            ></b-form-select>
-          </b-form-group>
-        </div>
-        <div class="col">
-          <b-form-group label="Start Date:">
-            <b-form-datepicker
-              v-model="form.startDate"
-              class="mb-2"
-            ></b-form-datepicker>
-          </b-form-group>
-        </div>
-        <div class="col">
-          <b-form-group label="End Date:">
-            <b-form-datepicker
-              v-model="form.endDate"
-              class="mb-2"
-            ></b-form-datepicker>
-          </b-form-group>
-        </div>
-      </div>
-      <b-button type="submit" variant="primary">Submit</b-button>
-    </b-form>
-    <div class="align-center">
+    <b-col v-if="!selectedNeighborhood" class="align-center">
       <div class="container"></div>
-    </div>
-    <div id="neighborhood-map" class="align-center">
-      
-    </div>
+    </b-col>
+    <b-col v-show="selectedNeighborhood">
+      <b-button @click="selectedNeighborhood = null; $router.go()" variant="primary">Back</b-button>
+      <div id="neighborhood-map" class="align-center"> </div>
+      <div id="neighborhood-container"></div>
+    </b-col>
+     <b-sidebar id="sidebar-1" width="325px" right v-model="sidebarClicked" title="Query" shadow>
+      <div class="mx-3 py-2">
+        <SideGraphs :nieghborhood="selectedNeighborhood" />
+      </div>
+    </b-sidebar>
   </div>
 </template>
 
@@ -54,51 +23,53 @@ import crimeData from "@/assets/crime-data-sample.json";
 import baltimoreCity from "@/assets/baltimore-city-topo.json";
 import baltimoreCityGeo from "@/assets/baltimore-city.json";
 import constData from "../constants/d3Constants.js";
+import SideGraphs from "./SideGraphs.vue"
 import L from "leaflet";
 import "leaflet/dist/leaflet.css";
 import "leaflet/dist/leaflet.js";
-// import cookie from "vue-cookies";
-// import boston from "@/assets/boston_neighborhoods.json";
 
 export default {
   name: "D3Impl",
+  components: {SideGraphs},
   data() {
     return {
       fullView: true,
       baltimoreCity,
       baltimoreCityGeo,
       crimeData,
-      show: true,
-      form: {
-        crimeType: null,
-        neighborhood: null,
-        startDate: null,
-        endDate: null,
-      },
+      sidebarClicked: true,
       crimeTypes: Object.keys(constData.crimeCodes),
       neighborhoods: constData.neighborhoods,
+      selectedNeighborhood: null,
+      crimeType: null
     };
   },
   mounted() {
     this.generateArc();
   },
+  watch: {
+    // selectedNeighborhood: {
+    //   handler () {
+    //     this.onSelect(this.selectedNeighborhood)
+    //   }
+    // }
+  },
   methods: {
-    onSubmit(event) {
-      event.preventDefault();
+    onSubmit() {
       var tempCrimeData = JSON.parse(JSON.stringify(this.crimeData.features));
-      if (this.form.crimeType) {
+      if (this.crimeType) {
         tempCrimeData = tempCrimeData.filter(
           (crime) =>
             crime.properties.Description.toLowerCase() ===
-            this.form.crimeType.toLowerCase()
+            this.crimeType.toLowerCase()
         );
       }
-      if (this.form.neighborhood) {
+      if (this.selectedNeighborhood) {
         tempCrimeData = tempCrimeData.filter((crime) => {
           if (crime.properties.Neighborhood) {
             return (
               crime.properties.Neighborhood.toLowerCase() ===
-              this.form.neighborhood.toLowerCase()
+              this.selectedNeighborhood.toLowerCase()
             );
           }
         });
@@ -112,7 +83,7 @@ export default {
       d3.selectAll(".hidden").remove();
       d3.selectAll("div.tooltip").remove();
 
-      var width = 1300;
+      var width = 1300; //1300
       var height = 1600;
 
       let projection = d3
@@ -120,8 +91,8 @@ export default {
         .center([0, 39.3])
         .rotate([76.6, 0])
         .parallels([38, 40])
-        .scale(500000)
-        .translate([780, 670]);
+        .scale(250000) // 500000
+        .translate([500, 400]); //.translate([780, 670])
 
       let path = d3
         .geoPath()
@@ -183,47 +154,9 @@ export default {
         })
         .on("click", (event) => {
           event.preventDefault();
-          this.onSelect(event.target.id);
+          this.onSelect(event.target.id)
+          this.selectedNeighborhood = event.target.id;
         });
-
-      // labels
-      //   .selectAll("path")
-      //   .data(baltimore.features)
-      //   .enter()
-      //   .append("text")
-      //   .attr("id", (d) =>
-      //     d.properties.LABEL.replace(/\s/g, "")
-      //       .replace(/\//g, "")
-      //       .replace(/'/g, "")
-      //   )
-      //   .attr("class", "subunit-label")
-      //   .attr("transform", (d) => "translate(" + path.centroid(d) + ")")
-      //   .attr("dy", ".35em")
-      //   .text("");
-      // .on("mouseover", (event, d) => {
-      //   event.preventDefault();
-      //   return d3
-      //     .select(
-      //       "#" +
-      //         d.properties.LABEL.replace(/\s/g, "")
-      //           .replace(/\//g, "")
-      //           .replace(/'/g, "")
-      //     )
-      //     .style("font-size", "14px")
-      //     .style("fill-opacity", "1");
-      // })
-      // .on("mouseout", (event, d) => {
-      //   event.preventDefault();
-      //   return d3
-      //     .select(
-      //       "#" +
-      //         d.properties.LABEL.replace(/\s/g, "")
-      //           .replace(/\//g, "")
-      //           .replace(/'/g, "")
-      //     )
-      //     .style("font-size", "10px")
-      //     .style("fill-opacity", "0.5");
-      // });
 
       crime
         .selectAll("path")
@@ -254,14 +187,17 @@ export default {
 
       return svg.node();
     },
-
+    getAvailableYears() {
+      let returning = []
+      for (let i = 2021; i > 2010; i--) {
+          returning.push(i)      
+      }
+      return returning
+    },
     onSelect(neighborhoodName) {
-      // d3.selectAll("svg").remove();
-      // d3.selectAll(".hidden").remove();
-      // d3.selectAll("div.tooltip").remove();
-      // this.fullView = false;
-      console.log(neighborhoodName)
-      document.getElementById("neighborhood-map").innerHTML = '<div id="neighborhood-container"></div>';
+      this.sidebarClicked = true
+     // document.getElementById("neighborhood-map").innerHTML = '<div id="neighborhood-container"></div>';
+      this.selectedNeighborhood = neighborhoodName
       let tempCrimeData = JSON.parse(JSON.stringify(this.crimeData.features));
       tempCrimeData = tempCrimeData.filter((crime) => {
         if (crime.properties.Neighborhood) {
@@ -289,7 +225,6 @@ export default {
         attribution: osmAttrs,
       });
 
-      // Center view on ~NYC
       let neighborhoodCenter = new L.LatLng(39.3, -76.6);
 
       map.setView(neighborhoodCenter, 11); // latlng, zoom level
@@ -338,8 +273,8 @@ export default {
 <style>
 #neighborhood-container {
   display: inline-block;
-  height: 450px;
-  width: 700px;
+  height: 800px;
+  width: 100%;
 }
 .base {
   fill: #dedede;
@@ -349,7 +284,7 @@ export default {
 }
 
 .province {
-  fill: #000;
+  fill: #dedede;
   stroke: #fff;
   stroke-dasharray: 0.5, 3;
   stroke-linejoin: round;

@@ -1,11 +1,11 @@
 <template>
 <div>
     <b-tabs content-class="mt-3">
-         <b-tab no-body title="D3 Progress">
+         <b-tab no-body title="By Neighborhood">
            <D3Impl/>
-                </b-tab>
+          </b-tab>
 
-      <b-tab no-body title="Python Progress">
+      <b-tab no-body title="Citywide">
           <Matplotlib/>
       </b-tab>
 
