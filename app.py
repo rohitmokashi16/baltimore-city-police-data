@@ -45,7 +45,6 @@ def v_day_of_the_week_boxplot():
     lower = int(request.args.get('lower'))
     upper = int(request.args.get('upper'))
     swarm = bool(request.args.get('swarm'))
-    print(lower)
     return v.day_of_the_week_boxplot(year_or_month, lower, upper, swarm)
 
 @app.route('/v/district_wise_boxplot', methods=['GET'])
