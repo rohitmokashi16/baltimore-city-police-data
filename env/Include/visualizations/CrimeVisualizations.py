@@ -57,10 +57,20 @@ class CrimeVisualizations:
 		upper_year: upper bound for year filter
 		is_swarm: flag to enable or disable swarmplot (Boolean)
 		*neighborhood_name: contains name of ONE neighborhood (string as first and only element of tuple)"""
-
-		if groupby is None:
+		
+		if groupby is None: 
 			groupby = "Year"
-
+		elif groupby.lower() == 'month_name':
+			groupby = "Month_Name"
+		if lower_year is None:
+    			lower_year = 2016
+		else:
+    			lower_year = int(lower_year)
+		if upper_year is None:
+    			upper_year = 2020
+		else:
+    			upper_year = int(upper_year)
+		
 		# Activate figure and update settings
 		fig = plt.figure(figsize=(20, 10))
 		self.seaborn_plot_settings()
@@ -71,7 +81,8 @@ class CrimeVisualizations:
 
 		# Check for Neighborhood filter and filter dataset and set title accordingly
 		neighborhood_title_string = ''
-		if len(neighborhood_name) > 0:
+		print(neighborhood_name)
+		if neighborhood_name[0] is not None:		
 			dataset = dataset[dataset['Neighborhood'] == neighborhood_name[0].upper()]
 			neighborhood_title_string = f" for neighborhood {neighborhood_name[0]}"
 		title = "Incidents by Day of the Week grouped by " + ("month" if groupby.lower() == 'month_name' else "year") + neighborhood_title_string
@@ -106,6 +117,21 @@ class CrimeVisualizations:
 		lower_year: lower bound for year filter
 		upper_year: upper bound for year filter
 		is_swarm: flag to enable or disable swarmplot (Boolean)"""
+		
+		if groupby is None: 
+			groupby = "Year"
+		elif groupby.lower() == 'month_name':
+			groupby = "Month_Name"
+		if lower_year is None:
+    			lower_year = 2016
+		else:
+    			lower_year = int(lower_year)
+		if upper_year is None:
+    			upper_year = 2020
+		else:
+    			upper_year = int(upper_year)
+
+			
 
 		# Activate figure and update settings
 		fig = plt.figure(figsize=(20, 10))
@@ -123,7 +149,7 @@ class CrimeVisualizations:
 		# Check if Swarmplot is enabled
 		if is_swarm:
 			# Check for month or year grouping and set hue and title accordingly
-			if groupby.lower() == "month_name":
+			if groupby is not None and groupby.lower() == 'month_name': 
 				sns.swarmplot(x = "Total_Incidents", y = "District", data = tp, hue = groupby, size = 7, hue_order = self.months_of_year)
 			else:
 				sns.swarmplot(x = "Total_Incidents", y = "District", data = tp, hue = groupby, size = 7)
@@ -147,9 +173,25 @@ class CrimeVisualizations:
 		lower_year: lower bound for year filter
 		upper_year: upper bound for year filter
 		*neighborhood_name: contains name of ONE neighborhood (string as first and only element of tuple)"""
-		if groupby.lower() == 'month_name': 
+		if groupby is not None and groupby.lower() == 'month_name': 
 			groupby = 'month_number'
 		# Activate figure and update settings
+
+		if groupby is None: 
+			groupby = "Year"
+		elif groupby.lower() == 'month_name':
+			groupby = "Month_Name"
+		if lower_year is None:
+    			lower_year = 2016
+		else:
+    			lower_year = int(lower_year)
+		if upper_year is None:
+    			upper_year = 2020
+		else:
+    			upper_year = int(upper_year)
+
+		
+
 		fig = plt.figure(figsize=(30, 10))
 		self.seaborn_plot_settings()
 		# Update dataset based on year filters
@@ -158,8 +200,7 @@ class CrimeVisualizations:
 
 		# Check for Neighborhood filter and filter dataset and set title accordingly
 		neighborhood_title_string = ''
-		if len(neighborhood_name) > 0:
-			# print(neighborhood_name[0])
+		if neighborhood_name[0] is not None:
 			dataset = dataset[dataset['Neighborhood'] == neighborhood_name[0].upper()]
 			neighborhood_title_string = f" for neighborhood {neighborhood_name[0]}"
 		# print(dataset.head())
@@ -207,6 +248,15 @@ class CrimeVisualizations:
 		lower_year: lower bound for year filter
 		upper_year: upper bound for year filter
 		inside_outside_flag: if True, generates a stacked bar chart instead of a normal horizontal chart"""
+
+		if inside_outside_flag is None:
+			inside_outside_flag = False
+		if lower_year is None:
+    			groupby = 2016
+
+		if upper_year is None:
+    			upper_year = 2020
+		
 
 		# Activate figure and update settings
 		fig = plt.figure(figsize=(20, 10))

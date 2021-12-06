@@ -42,10 +42,11 @@ def return_image():
 @app.route('/v/day_of_the_week_boxplot', methods=['GET'])
 def v_day_of_the_week_boxplot():
     year_or_month = request.args.get('ym')
-    lower = int(request.args.get('lower'))
-    upper = int(request.args.get('upper'))
-    swarm = bool(request.args.get('swarm'))
-    return v.day_of_the_week_boxplot(year_or_month, lower, upper, swarm)
+    lower = request.args.get('lower')
+    upper = request.args.get('upper')
+    swarm = request.args.get('swarm')
+    neighborhood = request.args.get('neighborhood')
+    return v.day_of_the_week_boxplot(year_or_month, lower, upper, swarm, neighborhood)
 
 @app.route('/v/district_wise_boxplot', methods=['GET'])
 def v_district_wise_boxplot():
@@ -58,9 +59,10 @@ def v_district_wise_boxplot():
 @app.route('/v/indoor_outdoor_crimes_trends', methods=['GET'])
 def indoor_outdoor_crimes_trends():
     year_or_month = request.args.get('ym')
-    lower = int(request.args.get('lower'))
-    upper = int(request.args.get('upper'))
-    return v.indoor_outdoor_crimes_trends(year_or_month, lower, upper)
+    lower = request.args.get('lower')
+    upper = request.args.get('upper')
+    neighborhood = request.args.get('neighborhood')
+    return v.indoor_outdoor_crimes_trends(year_or_month, lower, upper, neighborhood)
 
 @app.route('/v/district_crime_bar_charts', methods=['GET'])
 def district_crime_bar_charts():
