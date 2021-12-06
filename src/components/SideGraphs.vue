@@ -61,19 +61,19 @@
         <b-button class="justify-start" @click="getCharts" variant="primary">Update</b-button>
     </b-form>
 
+    <b-card no-body v-if="selected.indexOf('4') !== -1">
+        <b-img :src="'data:image/png;base64,'+ options[0].img"/>
+    </b-card>
     <b-card no-body v-if="selected.indexOf('1') !== -1">
         <b-img :src="'data:image/png;base64,'+ options[1].img"/>
     </b-card>
-    <!-- <b-img v-if="crimeCalendar" :src="'data:image/png;base64,'+ calendarImage"/>
-    <b-img v-if="dayOfTheWeekBoxPlot" :src="'data:image/png;base64,'+ imageFromPython"/>
-    <b-img v-if="dayOfTheWeekBoxPlot" :src="'data:image/png;base64,'+ imageFromPython"/>
-    <b-img v-if="dayOfTheWeekBoxPlot" :src="'data:image/png;base64,'+ imageFromPython"/> -->
 
-
-    <!-- {{ form ? form.crimeType : '' }}
-    {{ form ? form.startYear : '' }}
-    {{ form ? form.endYear : '' }}
-    {{ nieghborhood }} -->
+    <b-card no-body v-if="selected.indexOf('2') !== -1">
+        <b-img :src="'data:image/png;base64,'+ options[2].img"/>
+    </b-card>
+    <b-card no-body v-if="selected.indexOf('3') !== -1">
+        <b-img :src="'data:image/png;base64,'+ options[3].img"/>
+    </b-card>
 
   </b-col>
 </template>
@@ -107,8 +107,8 @@ export default {
         msg: '',
         form: {
             crimeType: null,
-            startDate: null,
-            endDate: null,
+            startDate: 2016,
+            endDate: 2020,
             neighborhood2: null
         },
         boxImg: null,
@@ -145,14 +145,13 @@ export default {
     getCharts() {
         let promises = []
         for (let s of this.selected) {
-            console.log(s)
             const path = this.options[s].url;
             this.options[s].img = JSON.parse(JSON.stringify(''))
             let p = axios.get(path, {params: {
                 lower: this.form.startDate,
                 upper: this.form.endDate,
                 swarm: true, // swarm: swarm === 'True' ? "True" : ""
-                neighborhood: this.neighborhood
+                neighborhood: this.form.neighborhood2
             },
             host: process.env.BASE_URL});
             promises.push(p);
