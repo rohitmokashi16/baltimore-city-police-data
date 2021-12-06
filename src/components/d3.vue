@@ -232,7 +232,7 @@ export default {
 
       let osmTiles = new L.TileLayer(bwOsmURL, {
         minZoom: 14,
-        maxZoom: 17,
+        maxZoom: 19,
         attribution: osmAttrs,
       });
 
@@ -266,19 +266,49 @@ export default {
           return {
             color: "#DC143C",
             opacity: 1,
-            radius: 0.8,
-            fillColor: "#dedede",
-            fillOpacity: 0.7,
+            radius: 1.5,
+            fillColor: "#DC143C",
+            fillOpacity: 0.6,
           };
         },
         onEachFeature: (feature, layer) => {
-          layer.bindPopup(feature.properties.Location);
+          const dateTimeString = this.getFormattedDateTime(feature.properties.CrimeDateTime);
+          layer.bindTooltip(
+            "<div><div>Date &amp; Time: " +
+              dateTimeString +
+              "</div><div>Location: " +
+              feature.properties.Location +
+              "</div><div>Crime Type: " +
+              feature.properties.Description +
+              "</div><div>District: " +
+              feature.properties.District +
+              "</div></div>"
+          );
         },
         pointToLayer: (feature, latlng) => {
           console.log(feature.properties.Location);
           return L.circleMarker(latlng);
         },
       }).addTo(map);
+    },
+    getFormattedDateTime(crimeDateTime) {
+      const dateTime = new Date(crimeDateTime);
+      const dateTimeString =
+        dateTime.getMonth() +
+        "/" +
+        dateTime.getDate() +
+        "/" +
+        dateTime.getFullYear() +
+        " " +
+        (dateTime.getHours() < 10 ? "0" : "") +
+        dateTime.getHours() +
+        ":" +
+        (dateTime.getMinutes() < 10 ? "0" : "") +
+        dateTime.getMinutes() +
+        ":" +
+        (dateTime.getSeconds() < 10 ? "0" : "") +
+        dateTime.getSeconds();
+        return dateTimeString;
     },
     getCenterOfPolygon(polyData) {
       let latitudes = polyData[0].geometry.coordinates[0].map(
