@@ -8,7 +8,14 @@
       <div id="neighborhood-map" class="align-center"> </div>
       <div id="neighborhood-container"></div>
     </b-col>
-     <b-sidebar id="sidebar-1" width="325px" right v-model="sidebarClicked" title="Query" shadow>
+    <b-sidebar
+      id="sidebar-1"
+      width="325px"
+      right
+      v-model="sidebarClicked"
+      title="Query"
+      shadow
+    >
       <div class="mx-3 py-2">
         <SideGraphs @updateMapPoints="updateDataFromSide($event)" :nieghborhood="selectedNeighborhood" />
       </div>
@@ -22,7 +29,7 @@ import * as topojson from "topojson";
 import baltimoreCity from "@/assets/baltimore-city-topo.json";
 import baltimoreCityGeo from "@/assets/baltimore-city.json";
 import constData from "../constants/d3Constants.js";
-import SideGraphs from "./SideGraphs.vue"
+import SideGraphs from "./SideGraphs.vue";
 import L from "leaflet";
 import axios from 'axios';
 import "leaflet/dist/leaflet.css";
@@ -30,7 +37,7 @@ import "leaflet/dist/leaflet.js";
 
 export default {
   name: "D3Impl",
-  components: {SideGraphs},
+  components: { SideGraphs },
   data() {
     return {
       fullView: true,
@@ -44,7 +51,7 @@ export default {
       crimeTypes: Object.keys(constData.crimeCodes),
       neighborhoods: constData.neighborhoods,
       selectedNeighborhood: null,
-      crimeType: null
+      crimeType: null,
     };
   },
   async mounted() {
@@ -110,10 +117,7 @@ export default {
         .scale(250000) // 500000
         .translate([500, 400]); //.translate([780, 670])
 
-      let path = d3
-        .geoPath()
-        .projection(projection)
-        .pointRadius(3.5);
+      let path = d3.geoPath().projection(projection).pointRadius(3.5);
 
       let container = d3.select(".container");
       let svg = container
@@ -205,18 +209,17 @@ export default {
       return svg.node();
     },
     getAvailableYears() {
-      let returning = []
+      let returning = [];
       for (let i = 2021; i > 2010; i--) {
-          returning.push(i)      
+        returning.push(i);
       }
-      return returning
+      return returning;
     },
     onSelect(neighborhoodName) {
-
-      this.sidebarClicked = true
-      this.selectedNeighborhood = neighborhoodName
-
-      let tempCrimeData = Object.assign([], this.crimeData);
+      this.sidebarClicked = true;
+      // document.getElementById("neighborhood-map").innerHTML = '<div id="neighborhood-container"></div>';
+      this.selectedNeighborhood = neighborhoodName;
+      let tempCrimeData = JSON.parse(JSON.stringify(this.crimeData.features));
       tempCrimeData = tempCrimeData.filter((crime) => {
         if (crime.properties.Neighborhood) {
           return (
@@ -232,21 +235,29 @@ export default {
         osmAttrs =
           "Map data © <a href='http://openstreetmap.org'>OpenStreetMap</a>";
 
-      map.on("load", function() {
+      map.on("load", function () {
         setTimeout(() => {
           map.invalidateSize();
         }, 1);
       });
 
       let osmTiles = new L.TileLayer(bwOsmURL, {
-        minZoom: 11,
+        minZoom: 14,
         maxZoom: 17,
         attribution: osmAttrs,
       });
 
-      let neighborhoodCenter = new L.LatLng(39.3, -76.6);
+      const polyData = baltimoreCityGeo.features.filter(
+        (neighborhood) =>
+          neighborhood.properties.NBRDESC.toLowerCase() ===
+          neighborhoodName.toLowerCase()
+      );
 
-      map.setView(neighborhoodCenter, 11); // latlng, zoom level
+      const center = this.getCenterOfPolygon(polyData);
+
+      let neighborhoodCenter = new L.LatLng(center[0], center[1]);
+
+      map.setView(neighborhoodCenter, 14.5); // latlng, zoom level
       map.addLayer(osmTiles);
 
       function polystyle() {
@@ -259,17 +270,12 @@ export default {
         };
       }
 
-      const polyData = baltimoreCityGeo.features.filter(
-        (neighborhood) =>
-          neighborhood.properties.NBRDESC.toLowerCase() ===
-          neighborhoodName.toLowerCase()
-      );
       L.geoJson(polyData, { style: polystyle }).addTo(map);
 
       L.geoJson(tempCrimeData, {
         style: () => {
           return {
-            color: "#808080",
+            color: "#DC143C",
             opacity: 1,
             radius: 0.8,
             fillColor: "#dedede",
@@ -284,6 +290,27 @@ export default {
           return L.circleMarker(latlng);
         },
       }).addTo(map);
+    },
+    getCenterOfPolygon(polyData) {
+      let latitudes = polyData[0].geometry.coordinates[0].map(
+        (latlon) => latlon[1]
+      );
+      let longitudes = polyData[0].geometry.coordinates[0].map(
+        (latlon) => latlon[0]
+      );
+
+      latitudes.sort();
+      longitudes.sort();
+
+      const lowX = latitudes[0];
+      const highX = latitudes[latitudes.length - 1];
+
+      const lowY = longitudes[0];
+      const highY = longitudes[longitudes.length - 1];
+
+      const centerX = lowX + (highX - lowX) / 2;
+      const centerY = lowY + (highY - lowY) / 2;
+      return [centerX, centerY];
     },
   },
 };
