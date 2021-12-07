@@ -1,16 +1,16 @@
 <template>
   <div>
-    <b-col v-if="!selectedNeighborhood" class="align-center">
+    <b-col v-if="!selectedNeighborhood && crimeData" class="align-center">
       <div class="container"></div>
     </b-col>
-    <b-col v-show="selectedNeighborhood">
+    <b-col v-if="crimeData" v-show="selectedNeighborhood">
       <b-button @click="selectedNeighborhood = null; $router.go()" variant="primary">Back</b-button>
       <div id="neighborhood-map" class="align-center"> </div>
       <div id="neighborhood-container"></div>
     </b-col>
      <b-sidebar id="sidebar-1" width="325px" right v-model="sidebarClicked" title="Query" shadow>
       <div class="mx-3 py-2">
-        <SideGraphs :nieghborhood="selectedNeighborhood" />
+        <SideGraphs @updateMapPoints="updateDataFromSide($event)" :nieghborhood="selectedNeighborhood" />
       </div>
     </b-sidebar>
   </div>
@@ -19,12 +19,12 @@
 <script>
 import * as d3 from "d3";
 import * as topojson from "topojson";
-import crimeData from "@/assets/crime-data-sample.json";
 import baltimoreCity from "@/assets/baltimore-city-topo.json";
 import baltimoreCityGeo from "@/assets/baltimore-city.json";
 import constData from "../constants/d3Constants.js";
 import SideGraphs from "./SideGraphs.vue"
 import L from "leaflet";
+import axios from 'axios';
 import "leaflet/dist/leaflet.css";
 import "leaflet/dist/leaflet.js";
 
@@ -36,7 +36,10 @@ export default {
       fullView: true,
       baltimoreCity,
       baltimoreCityGeo,
-      crimeData,
+      startDate: 2016,
+      endDate: 2020,
+      crimeData: null,
+      crimeColumns: null,
       sidebarClicked: true,
       crimeTypes: Object.keys(constData.crimeCodes),
       neighborhoods: constData.neighborhoods,
@@ -44,41 +47,54 @@ export default {
       crimeType: null
     };
   },
-  mounted() {
-    this.generateArc();
+  async mounted() {
+    await this.updateData();
   },
+
   watch: {
-    // selectedNeighborhood: {
-    //   handler () {
-    //     this.onSelect(this.selectedNeighborhood)
-    //   }
-    // }
+    crimeData: {
+      handler () {
+        console.log('update')
+        if (this.crimeData){
+          this.generateArc();
+        }
+      }
+    },
+    selectedNeighborhood: {
+      handler () {
+        this.updateData();
+        if (this.selectedNeighborhood) {
+           this.onSelect(this.selectedNeighborhood)
+        }
+      }
+    }
   },
+
   methods: {
-    onSubmit() {
-      var tempCrimeData = JSON.parse(JSON.stringify(this.crimeData.features));
-      if (this.crimeType) {
-        tempCrimeData = tempCrimeData.filter(
-          (crime) =>
-            crime.properties.Description.toLowerCase() ===
-            this.crimeType.toLowerCase()
-        );
-      }
-      if (this.selectedNeighborhood) {
-        tempCrimeData = tempCrimeData.filter((crime) => {
-          if (crime.properties.Neighborhood) {
-            return (
-              crime.properties.Neighborhood.toLowerCase() ===
-              this.selectedNeighborhood.toLowerCase()
-            );
-          }
-        });
-        // console.log(tempCrimeData);
-      }
-      this.generateArc(tempCrimeData);
+    updateDataFromSide(data) {
+      this.selectedNeighborhood = data.neighborhood2
+      this.startDate = data.startDate
+      this.endDate = data.endDate
+      this.crimeType = data.crimeType
+    },
+    async updateData() {
+       await axios.get('/r/map_data', {params: {
+              lower: this.startDate,
+              upper: this.endDate,
+              crime_type: this.crimeType,
+              neighborhood: this.selectedNeighborhood
+            },
+            host: process.env.BASE_URL}).then(d => {
+              console.log('hit')
+              this.crimeColumns = d.data.columns
+              this.crimeData = d.data.data
+            });
     },
 
-    generateArc(filteredCrimeData = this.crimeData.features) {
+    onSubmit() {
+    },
+
+    generateArc() {
       d3.selectAll("svg").remove();
       d3.selectAll(".hidden").remove();
       d3.selectAll("div.tooltip").remove();
@@ -154,13 +170,14 @@ export default {
         })
         .on("click", (event) => {
           event.preventDefault();
-          this.onSelect(event.target.id)
           this.selectedNeighborhood = event.target.id;
+          this.updateData();
+          this.onSelect(event.target.id)
         });
 
       crime
         .selectAll("path")
-        .data(filteredCrimeData)
+        .data(this.crimeData)
         .enter()
         .append("path")
         .style("fill", (d) => constData.crimeCodes[d.properties.Description])
@@ -195,10 +212,11 @@ export default {
       return returning
     },
     onSelect(neighborhoodName) {
+
       this.sidebarClicked = true
-     // document.getElementById("neighborhood-map").innerHTML = '<div id="neighborhood-container"></div>';
       this.selectedNeighborhood = neighborhoodName
-      let tempCrimeData = JSON.parse(JSON.stringify(this.crimeData.features));
+
+      let tempCrimeData = Object.assign([], this.crimeData);
       tempCrimeData = tempCrimeData.filter((crime) => {
         if (crime.properties.Neighborhood) {
           return (
@@ -207,6 +225,7 @@ export default {
           );
         }
       });
+
 
       let map = L.map("neighborhood-container"),
         bwOsmURL = "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",

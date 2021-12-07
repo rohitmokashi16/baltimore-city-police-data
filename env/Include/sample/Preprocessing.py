@@ -24,7 +24,20 @@ class Preprocessing:
 		self.final_dataset = pd.read_sql(sql_query, con = self.connection)
 		print(f"Records between years {year1} and {year2} fetched.")
 		
-	
+	def dataset_read_all_params(self, year1, year2, neighborhood, crime_type):	
+		sql_query = ''
+		if neighborhood is not None and crime_type is not None:
+			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Description = "{crime_type}" and (Neighborhood = "{neighborhood}"'
+		elif crime_type is not None:
+			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Description = "{crime_type}"'
+		elif neighborhood is not None: 
+			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Neighborhood = "{neighborhood}"'
+		else:
+			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) LIMIT 500'
+		
+		df = pd.read_sql(sql_query, con = self.connection)
+		return df.to_json(orient="split")
+		
 	def dataset_add_year(self, dataset, column_name):
 		"""Extract year from the given datetime column and add a new column with that data.
 		dataset: pandas DataFrame object
