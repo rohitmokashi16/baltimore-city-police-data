@@ -25,6 +25,9 @@ data = prepros_obj.final_dataset
 v = CrimeVisualizations(prepros_obj)
 c = CrimeCalendar(prepros_obj)
 
+def queryDB(lower, upper, neighborhood, crime_type):
+    return prepros_obj.dataset_read_all_params(lower, upper, neighborhood, crime_type);
+
 @app.route("/", defaults={"path": ""})
 @app.route("/<string:path>")
 @app.route("/<path:path>")
@@ -75,6 +78,15 @@ def crime_calendar():
     neighborhood = request.args.get('neighborhood')
     crime_type = request.args.get('crime_type')
     return c.yearCalendar(lower, upper, neighborhood, crime_type)
+
+@app.route('/r/map_data', methods=['GET'])
+def queryDB1():
+    lower = request.args.get('lower')
+    upper = request.args.get('upper')
+    neighborhood = request.args.get('neighborhood')
+    crime_type = request.args.get('crime_type')
+    return queryDB(lower, upper, neighborhood, crime_type)
+
 
 @app.route('/v/district_crime_bar_charts', methods=['GET'])
 def district_crime_bar_charts():
