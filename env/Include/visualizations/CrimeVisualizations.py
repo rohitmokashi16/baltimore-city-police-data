@@ -49,7 +49,7 @@ class CrimeVisualizations:
 		# sns.set(rc={'figure.figsize':(30, 10)})
 		sns.set(font_scale = 1.25)
 
-	def day_of_the_week_boxplot(self, groupby = "Year", lower_year = 2016, upper_year = 2020, is_swarm = False, *neighborhood_name):
+	def day_of_the_week_boxplot(self, groupby = "Year", lower_year = 2016, upper_year = 2020, is_swarm = False, neighborhood_name = None, crime_type = None):
 		"""Generates boxplots for total incidents across different days of the week.
 		dataset: pandas DataFrame object
 		groupby: column name to group the dataset by (Year (default) or Month_Name)
@@ -77,15 +77,20 @@ class CrimeVisualizations:
 
 		# Update dataset based on year filters
 		self.dataset_updater(lower_year, upper_year)
-		dataset = self.dataset_obj.final_dataset[['Year', 'Month_Name', 'Total_Incidents', 'Day', 'Neighborhood']]
+		dataset = self.dataset_obj.final_dataset[['Year', 'Month_Name', 'Total_Incidents', 'Day', 'Neighborhood', 'Description']]
 
 		# Check for Neighborhood filter and filter dataset and set title accordingly
 		neighborhood_title_string = ''
-		print(neighborhood_name)
-		if neighborhood_name[0] is not None:		
-			dataset = dataset[dataset['Neighborhood'] == neighborhood_name[0].upper()]
-			neighborhood_title_string = f" for neighborhood {neighborhood_name[0]}"
-		title = "Incidents by Day of the Week grouped by " + ("month" if groupby.lower() == 'month_name' else "year") + neighborhood_title_string
+		if neighborhood_name is not None:
+			dataset = dataset[dataset['Neighborhood'] == neighborhood_name.upper()]
+			neighborhood_title_string = f" for neighborhood {neighborhood_name}"
+
+		crime_type_title_string = ""
+		if crime_type is not None:
+			dataset = dataset[dataset['Description'] == crime_type.upper()]
+			crime_type_title_string = f"{crime_type} "
+		
+		title = crime_type_title_string + " Incidents by Day of the Week grouped by " + ("month" if groupby.lower() == 'month_name' else "year") + neighborhood_title_string
 
 		# Group by Day
 		tp = dataset.groupby(by = ["Day", groupby]).count().reset_index()
@@ -166,7 +171,7 @@ class CrimeVisualizations:
 		plot_base64data = base64.b64encode(string_bytes.read())
 		return plot_base64data
 
-	def indoor_outdoor_crimes_trends(self, groupby = "Year", lower_year = 2016, upper_year = 2020, *neighborhood_name):
+	def indoor_outdoor_crimes_trends(self, groupby = "Year", lower_year = 2016, upper_year = 2020, neighborhood_name = None, crime_type = None):
 		"""Generates line graphs for inside/outside crimes for different time groupings.
 		dataset: pandas DataFrame object
 		groupby: column name to group the dataset by (Year (default) or Month_Name)
@@ -196,14 +201,20 @@ class CrimeVisualizations:
 		self.seaborn_plot_settings()
 		# Update dataset based on year filters
 		self.dataset_updater(lower_year, upper_year)
-		dataset = self.dataset_obj.final_dataset[['Year', 'Month_Number','WeekNumber', 'Total_Incidents', 'Inside_Outside', 'Neighborhood']]
+		dataset = self.dataset_obj.final_dataset[['Year', 'Month_Number','WeekNumber', 'Total_Incidents', 'Inside_Outside', 'Neighborhood', 'Description']]
 
-		# Check for Neighborhood filter and filter dataset and set title accordingly
+				# Check for Neighborhood filter and filter dataset and set title accordingly
 		neighborhood_title_string = ''
-		if neighborhood_name[0] is not None:
-			dataset = dataset[dataset['Neighborhood'] == neighborhood_name[0].upper()]
-			neighborhood_title_string = f" for neighborhood {neighborhood_name[0]}"
-		# print(dataset.head())
+		if neighborhood_name is not None:
+			# print(neighborhood_name)
+			dataset = dataset[dataset['Neighborhood'] == neighborhood_name.upper()]
+			neighborhood_title_string = f" for neighborhood {neighborhood_name}"
+
+		# Check for crime type filter and filter dataset and set title accordingly
+		crime_type_title_string = ''
+		if crime_type is not None:
+			dataset = dataset[dataset['Description'] == crime_type.upper()]
+			crime_type_title_string = f" of {crime_type} incidents"
 
 		# Group by Inside_Outside
 		tp = dataset.groupby(by = [groupby, 'Inside_Outside']).count().reset_index()
@@ -235,7 +246,7 @@ class CrimeVisualizations:
 		# Updating y-axis settings
 		ax.set_ylim([tp['Total_Incidents'].min()//2, tp['Total_Incidents'].max()*1.25])
 		ax.set_ylabel("Total Incidents", fontsize = 15)
-		ax.set_title(f"Trends of Indoors and Outdoors Crimes by {grouping}{neighborhood_title_string}")
+		ax.set_title(f"Trends of Indoors and Outdoors Crimes by {grouping}{neighborhood_title_string}{crime_type_title_string}")
 		string_bytes = io.BytesIO()
 		plt.savefig(string_bytes, format='jpg')
 		string_bytes.seek(0)
@@ -276,7 +287,7 @@ class CrimeVisualizations:
 			ax.set_title("Bar Chart of Incident Count by Districts")
 		else:
 			# Generates horizontal stacked bar chart
-			tp = dataset.groupby(by = ["District", "Inside_Outside"]).count().reset_index()
+			tp = dataset.groupby(by = ["District", "Inside\\_Outside"]).count().reset_index()
 			tp1 = tp.groupby(['District']).sum().sort_values(['Total_Incidents'], ascending = False).reset_index()
 			sort_order = {i: 0 for i in tp1['District'].unique()}
 			val = 0
