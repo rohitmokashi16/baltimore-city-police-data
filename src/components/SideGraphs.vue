@@ -61,7 +61,7 @@
         <b-button class="justify-start" @click="getCharts" variant="primary">Update</b-button>
     </b-form>
 
-    <b-card no-body v-if="selected.indexOf('4') !== -1">
+    <b-card no-body v-if="selected.indexOf('0') !== -1">
         <b-img :src="'data:image/png;base64,'+ options[0].img"/>
     </b-card>
     <b-card no-body v-if="selected.indexOf('1') !== -1">
@@ -91,7 +91,7 @@ export default {
     return {
         selected: [], // Must be an array reference!
         options: [
-          { text: ' Centroid Map', url: '/j/centroid', value: 0, img: null },
+          { text: ' Centroid Map', url: '/j/crime_centroid', value: 0, img: null },
           { text: ' Crimes by Week Day', url: '/v/day_of_the_week_boxplot', value: 1, img: null },
           { text: ' Crimes Indoors vs Outdoors', url: '/v/indoor_outdoor_crimes_trends', value: 2, img: null },
           { text: ' Calendar', url: '/d/crime_calendar', value: 3, img: null }
@@ -114,12 +114,6 @@ export default {
         boxImg: null,
         indoorImg: null,
         centroidImg: null,
-        chartRoutes: [
-            "/v/day_of_the_week_boxplot",
-            "/v/district_wise_boxplot",
-            "/v/district_crime_bar_charts",
-            "/v/indoor_outdoor_crimes_trends"
-        ],
         crimeTypes: Object.keys(constData.crimeCodes),
     }
   },
