@@ -61,19 +61,19 @@
         <b-button class="justify-start" @click="getCharts" variant="primary">Update</b-button>
     </b-form>
 
+    <b-card no-body v-if="selected.indexOf('4') !== -1">
+        <b-img :src="'data:image/png;base64,'+ options[0].img"/>
+    </b-card>
     <b-card no-body v-if="selected.indexOf('1') !== -1">
         <b-img :src="'data:image/png;base64,'+ options[1].img"/>
     </b-card>
-    <!-- <b-img v-if="crimeCalendar" :src="'data:image/png;base64,'+ calendarImage"/>
-    <b-img v-if="dayOfTheWeekBoxPlot" :src="'data:image/png;base64,'+ imageFromPython"/>
-    <b-img v-if="dayOfTheWeekBoxPlot" :src="'data:image/png;base64,'+ imageFromPython"/>
-    <b-img v-if="dayOfTheWeekBoxPlot" :src="'data:image/png;base64,'+ imageFromPython"/> -->
 
-
-    <!-- {{ form ? form.crimeType : '' }}
-    {{ form ? form.startYear : '' }}
-    {{ form ? form.endYear : '' }}
-    {{ nieghborhood }} -->
+    <b-card no-body v-if="selected.indexOf('2') !== -1">
+        <b-img :src="'data:image/png;base64,'+ options[2].img"/>
+    </b-card>
+    <b-card no-body v-if="selected.indexOf('3') !== -1">
+        <b-img :src="'data:image/png;base64,'+ options[3].img"/>
+    </b-card>
 
   </b-col>
 </template>
@@ -91,10 +91,10 @@ export default {
     return {
         selected: [], // Must be an array reference!
         options: [
-          { text: ' Centroid Map', url: 'orange', value: 0, img: null },
+          { text: ' Centroid Map', url: '/j/centroid', value: 0, img: null },
           { text: ' Crimes by Week Day', url: '/v/day_of_the_week_boxplot', value: 1, img: null },
           { text: ' Crimes Indoors vs Outdoors', url: '/v/indoor_outdoor_crimes_trends', value: 2, img: null },
-          { text: ' Calendar', url: 'grape', value: 3, img: null }
+          { text: ' Calendar', url: '/d/crime_calendar', value: 3, img: null }
         ],
         visible1: true,
         visible: true,
@@ -107,8 +107,8 @@ export default {
         msg: '',
         form: {
             crimeType: null,
-            startDate: null,
-            endDate: null,
+            startDate: 2016,
+            endDate: 2020,
             neighborhood2: null
         },
         boxImg: null,
@@ -123,6 +123,15 @@ export default {
         crimeTypes: Object.keys(constData.crimeCodes),
     }
   },
+
+    watch: {
+        neighborhood: {
+            handler () {
+                this.form.neighborhood2 = this.neighborhood
+            }
+        }
+    },
+
   methods: {
     getMessage() {
       const path = 'https://vis636-baltcity-police.herokuapp.com/ping';
@@ -144,32 +153,31 @@ export default {
     },
     getCharts() {
         let promises = []
+        
         for (let s of this.selected) {
-            console.log(s)
             const path = this.options[s].url;
             this.options[s].img = JSON.parse(JSON.stringify(''))
             let p = axios.get(path, {params: {
                 lower: this.form.startDate,
                 upper: this.form.endDate,
                 swarm: true, // swarm: swarm === 'True' ? "True" : ""
-                neighborhood: this.neighborhood
+                crime_type: this.form.crimeType,
+                neighborhood: this.form.neighborhood2
             },
             host: process.env.BASE_URL});
             promises.push(p);
         }
+
+        this.$emit('updateMapPoints', this.form)
+
         Promise.all(promises).then((values) => {
             let i = 0
             for (let s of this.selected) {
                 this.options[s].img = values[i].data
                 i++
             }
-            console.log(values)
         }); 
      },
-    
-  },
-  created() {
-    this.getMessage();
   },
 };
 </script>

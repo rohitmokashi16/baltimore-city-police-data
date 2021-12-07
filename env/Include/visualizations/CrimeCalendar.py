@@ -1,104 +1,86 @@
-#!/usr/bin/env python
-# coding: utf-8
-
-# In[62]:
-
-
 import matplotlib.pyplot as plt
 import pandas as pd
 import july
 from july.utils import date_range
+from datetime import datetime, timedelta
+import io
+import base64
+
+class CrimeCalendar:
+    def __init__(self, prepros_obj):
+        self.day_of_the_week = ['Sunday', 'Monday', 'Tuesday', 'Wednesday', 'Thursday', 'Friday', 'Saturday']
+        self.months_of_year = ['January', 'February', 'March', 'April', 'May', 'June', 'July', 'August', 'September', 'October', 'November', 'December']
+        self.lower_year = 1950
+        self.upper_year = 2021
+        self.dataset_obj = prepros_obj 
+    
+    def dataset_updater(self, lower, upper):
+        """Checks if the lower and upper years of the visualization are the same as the existing dataset filters.
+        If not, then it updates the dataset by running a new SQL query on the database.
+		lower: integer, lower bound of year
+		upper: integer, upper bound of year
+		"""
+        if self.year_bound_checker(lower, upper):
+            self.dataset_obj.dataset_read(self.lower_year, self.upper_year)
+            self.dataset_obj.dataset_all_updations()
+            print("Dataset updated.")
+	
+
+    def year_bound_checker(self, lower, upper):
+        flag = False
+        if self.lower_year != lower or self.upper_year != upper:
+            self.lower_year, self.upper_year = lower, upper
+            flag = True
+        return flag
+ 
+    def dataIncidentFromParams(self, lower_year = 2016, upper_year = 2020, neighborhood_name = None, crime_type = None):
+        self.dataset_updater(lower_year, upper_year)
+        dataset = self.dataset_obj.final_dataset[['Year', 'Month_Number', 'Month_Name', 'Total_Incidents', 'Day', 'Neighborhood', 'Description', 'DayNumber']]
+       	# Check for Neighborhood filter and filter dataset and set title accordingly
+        neighborhood_title_string = ''
+        
+        if neighborhood_name is not None:
+            dataset = dataset[dataset['Neighborhood'] == neighborhood_name.upper()]
+            neighborhood_title_string = f" for neighborhood {neighborhood_name}"
+
+        crime_type_title_string = ""
+        if crime_type is not None:
+            dataset = dataset[dataset['Description'] == crime_type.upper()]
+            crime_type_title_string = f"{crime_type} "
+		
+        title = crime_type_title_string + " Incidents by Day of the Week " + neighborhood_title_string
+
+        # THIS LINE RIGHT HERE::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
+        return dataset.groupby(by = ["DayNumber", "Year"]).count().reset_index().to_numpy().T[2]
 
 
-# In[63]:
+    def yearCalendar(self, lower, upper, neighborhood, crime_type):
+        data = self.dataIncidentFromParams(lower, upper, neighborhood, crime_type)
+        start = lower + "-01-01"
+        end = upper + "-12-31"
+        dates = date_range(start,end) # datetime
+        # plot whole year calendar
+        july.calendar_plot(dates, data)
+        # new byte stream
+        string_bytes = io.BytesIO()
+        # write matplotlib object as jpeg to the byte stream
+        plt.savefig(string_bytes, format='jpg')
+        # move the byte stream cursor back to the beginning 
+        string_bytes.seek(0)
+        #encode in base 64
+        return base64.b64encode(string_bytes.read())   
 
-
-df = pd.read_csv('Crimedata.csv')
-T = df['CrimeDateTime']  
-
-
-# Fill nan data with next value
-T.fillna(method='backfill', inplace=True)
-
-# check and remove nan
-T = [x for x in T if x == x]
-
-
-# In[64]:
-
-
-# split date and time
-for i in range(len(T)):
-    T[i] = T[i].split()
-    T[i] = T[i][0]
-# print(T[:10])
-
-
-# count incident # each day
-Incident = {}
-for i in T:
-    if i not in Incident:
-        Incident[i]=1
-    else:
-        Incident[i]+=1
-
-
-# In[68]:
-
-
-# extract the daily crime on specific year and month
-
-# def yearmth(year,month):
-#     num = []
-#     target = year + "/" + month
-#     for k,v in Incident.items():
-#         ym = k[0:7]
-#         if target == ym:
-#             num.append(v)
-#     return num
-
-def yearCrime(year):
-    num = []
-    target = year
-    for k,v in Incident.items():
-        ym = k[0:4]
-        if target == ym:
-            num.append(v)
-    return num
-
-
-# In[69]:
-
-
-# set up for dropdown
-year = '2016'
-mth = '05'
-
-start = year + "-01-01"
-end = year + "-12-31"
-
-dates = date_range(start,end) # datetime
-num = yearCrime(year) # number of incidenet
-
-# print(num)
-
-
-# In[70]:
-
-
-# plot whole year calendar
-july.calendar_plot(dates, num)
-
-
-# In[72]:
-
-
-# plot one year calendar
-july.month_plot(dates, num, month=int(mth), colorbar=True)
-
-
-# In[ ]:
-
-
-
-
+    # def monthCalendar(self, year, mth,num):
+    #     start = year + "-01-01"
+    #     end = year + "-12-31"
+    #     dates = date_range(start,end) # datetime
+    #     # plot one year calendar
+    #     july.month_plot(dates, inci, month=int(mth), colorbar=True)
+    #     # new byte stream
+    #     string_bytes = io.BytesIO()
+    #     # write matplotlib object as jpeg to the byte stream
+    #     plt.savefig(string_bytes, format='jpg')
+    #     # move the byte stream cursor back to the beginning 
+    #     string_bytes.seek(0)
+    #     #encode in base 64
+    #     return base64.b64encode(string_bytes.read())
