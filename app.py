@@ -1,6 +1,7 @@
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from Include.visualizations.CrimeVisualizations import CrimeVisualizations
+from Include.visualizations.CrimeCalendar import CrimeCalendar
 from Include.sample.Preprocessing import Preprocessing
 from env.Include.visualizations.ImageReturn import returnImage
 from sqlalchemy import create_engine
@@ -22,6 +23,10 @@ prepros_obj = Preprocessing()
 data = prepros_obj.final_dataset
 
 v = CrimeVisualizations(prepros_obj)
+c = CrimeCalendar(prepros_obj)
+
+def queryDB(lower, upper, neighborhood, crime_type):
+    return prepros_obj.dataset_read_all_params(lower, upper, neighborhood, crime_type);
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<string:path>")
@@ -42,10 +47,12 @@ def return_image():
 @app.route('/v/day_of_the_week_boxplot', methods=['GET'])
 def v_day_of_the_week_boxplot():
     year_or_month = request.args.get('ym')
-    lower = int(request.args.get('lower'))
-    upper = int(request.args.get('upper'))
-    swarm = bool(request.args.get('swarm'))
-    return v.day_of_the_week_boxplot(year_or_month, lower, upper, swarm)
+    lower = request.args.get('lower')
+    upper = request.args.get('upper')
+    swarm = request.args.get('swarm')
+    crime_type = request.args.get('crime_type')
+    neighborhood = request.args.get('neighborhood')
+    return v.day_of_the_week_boxplot(year_or_month, lower, upper, swarm, neighborhood, crime_type)
 
 @app.route('/v/district_wise_boxplot', methods=['GET'])
 def v_district_wise_boxplot():
@@ -58,9 +65,28 @@ def v_district_wise_boxplot():
 @app.route('/v/indoor_outdoor_crimes_trends', methods=['GET'])
 def indoor_outdoor_crimes_trends():
     year_or_month = request.args.get('ym')
-    lower = int(request.args.get('lower'))
-    upper = int(request.args.get('upper'))
-    return v.indoor_outdoor_crimes_trends(year_or_month, lower, upper)
+    lower = request.args.get('lower')
+    upper = request.args.get('upper')
+    neighborhood = request.args.get('neighborhood')
+    crime_type = request.args.get('crime_type')
+    return v.indoor_outdoor_crimes_trends(year_or_month, lower, upper, neighborhood, crime_type)
+
+@app.route('/d/crime_calendar', methods=['GET'])
+def crime_calendar():
+    lower = request.args.get('lower')
+    upper = request.args.get('upper')
+    neighborhood = request.args.get('neighborhood')
+    crime_type = request.args.get('crime_type')
+    return c.yearCalendar(lower, upper, neighborhood, crime_type)
+
+@app.route('/r/map_data', methods=['GET'])
+def queryDB1():
+    lower = request.args.get('lower')
+    upper = request.args.get('upper')
+    neighborhood = request.args.get('neighborhood')
+    crime_type = request.args.get('crime_type')
+    return queryDB(lower, upper, neighborhood, crime_type)
+
 
 @app.route('/v/district_crime_bar_charts', methods=['GET'])
 def district_crime_bar_charts():
