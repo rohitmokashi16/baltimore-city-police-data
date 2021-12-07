@@ -1,3 +1,4 @@
+from Include.visualizations.CentroidBalt import CentroidBaltimore
 from flask import Flask, jsonify, request
 from flask_cors import CORS
 from Include.visualizations.CrimeVisualizations import CrimeVisualizations
@@ -27,6 +28,8 @@ c = CrimeCalendar(prepros_obj)
 
 def queryDB(lower, upper, neighborhood, crime_type):
     return prepros_obj.dataset_read_all_params(lower, upper, neighborhood, crime_type);
+
+j = CentroidBaltimore(prepros_obj.df_all_params)
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<string:path>")
@@ -94,6 +97,15 @@ def district_crime_bar_charts():
     upper = int(request.args.get('upper'))
     swarm = bool(request.args.get('swarm'))
     return v.district_crime_bar_charts(lower, upper, swarm)
+
+@app.route('/j/crime_centroid', methods=['GET'])
+def crime_centroid():
+    lower = request.args.get('lower')
+    upper = request.args.get('upper')
+    neighborhood = request.args.get('neighborhood')
+    crime_type = request.args.get('crime_type')
+    return j.getCentroidForParams(lower, upper, neighborhood, crime_type)
+
 
 if __name__ == '__main__':
     app.run(threaded=True)

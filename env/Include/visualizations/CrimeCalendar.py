@@ -35,32 +35,34 @@ class CrimeCalendar:
  
     def dataIncidentFromParams(self, lower_year = 2016, upper_year = 2020, neighborhood_name = None, crime_type = None):
         self.dataset_updater(lower_year, upper_year)
-        dataset = self.dataset_obj.final_dataset[['Year', 'Month_Number', 'Month_Name', 'Total_Incidents', 'Day', 'Neighborhood', 'Description', 'DayNumber']]
-       	# Check for Neighborhood filter and filter dataset and set title accordingly
-        neighborhood_title_string = ''
+        dataset = self.dataset_obj.final_dataset[['Year', 'annoying', 'Date', 'Month_Number', 'CrimeDateTime', 'Month_Name', 'Total_Incidents', 'Day', 'Neighborhood', 'Description', 'DayNumber']]
         
         if neighborhood_name is not None:
             dataset = dataset[dataset['Neighborhood'] == neighborhood_name.upper()]
-            neighborhood_title_string = f" for neighborhood {neighborhood_name}"
 
-        crime_type_title_string = ""
         if crime_type is not None:
             dataset = dataset[dataset['Description'] == crime_type.upper()]
-            crime_type_title_string = f"{crime_type} "
-		
-        title = crime_type_title_string + " Incidents by Day of the Week " + neighborhood_title_string
 
-        # THIS LINE RIGHT HERE::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::::
-        return dataset.groupby(by = ["DayNumber", "Year"]).count().reset_index().to_numpy().T[2]
-
+        return dataset
 
     def yearCalendar(self, lower, upper, neighborhood, crime_type):
         data = self.dataIncidentFromParams(lower, upper, neighborhood, crime_type)
+
+        # plot whole year calendar
         start = lower + "-01-01"
         end = upper + "-12-31"
         dates = date_range(start,end) # datetime
-        # plot whole year calendar
-        july.calendar_plot(dates, data)
+        if neighborhood is None:
+            neighborhood = 'all neighborhoods'
+        if crime_type is None:
+            crime_type = 'All crimes'
+        crime_array = data.groupby(['annoying']).count().reset_index().to_numpy()
+        finalArray = [0] * len(dates)
+        for i in crime_array:
+            index = (i[0] - dates[0]).days
+            finalArray[index] = i[1]
+
+        july.calendar_plot(dates, finalArray)
         # new byte stream
         string_bytes = io.BytesIO()
         # write matplotlib object as jpeg to the byte stream
@@ -69,18 +71,3 @@ class CrimeCalendar:
         string_bytes.seek(0)
         #encode in base 64
         return base64.b64encode(string_bytes.read())   
-
-    # def monthCalendar(self, year, mth,num):
-    #     start = year + "-01-01"
-    #     end = year + "-12-31"
-    #     dates = date_range(start,end) # datetime
-    #     # plot one year calendar
-    #     july.month_plot(dates, inci, month=int(mth), colorbar=True)
-    #     # new byte stream
-    #     string_bytes = io.BytesIO()
-    #     # write matplotlib object as jpeg to the byte stream
-    #     plt.savefig(string_bytes, format='jpg')
-    #     # move the byte stream cursor back to the beginning 
-    #     string_bytes.seek(0)
-    #     #encode in base 64
-    #     return base64.b64encode(string_bytes.read())
