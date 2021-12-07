@@ -46,7 +46,7 @@ class Preprocessing:
 		"""Extract day name, date, and week number from datetime column and store data in new columns.
 		dataset: pandas DataFrame object
 		column_name: name of the datetime column in dataset"""
-
+		dataset['DayNumber'] = dataset['CrimeDateTime'].dt.day_of_year
 		dataset['DayOfTheWeek'] = dataset['CrimeDateTime'].dt.dayofweek
 		dataset['Day'] = dataset['CrimeDateTime'].dt.day_name()
 		dataset['WeekNumber'] = dataset['CrimeDateTime'].dt.isocalendar().week
