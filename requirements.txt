@@ -11,7 +11,7 @@ descartes==1.1.0
 Fiona==1.8.20
 Flask==1.1.2
 Flask-Cors==3.0.10
-GDAL==3.3.3
+GDAL==3.4.0
 geopandas==0.10.2
 greenlet==1.1.2
 itsdangerous==2.0.1
