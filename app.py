@@ -1,9 +1,9 @@
-from Include.visualizations.CentroidBalt import CentroidBaltimore
+from env.Include.visualizations.CentroidBalt import CentroidBaltimore
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from Include.visualizations.CrimeVisualizations import CrimeVisualizations
-from Include.visualizations.CrimeCalendar import CrimeCalendar
-from Include.sample.Preprocessing import Preprocessing
+from env.Include.visualizations.CrimeVisualizations import CrimeVisualizations
+from env.Include.visualizations.CrimeCalendar import CrimeCalendar
+from env.Include.sample.Preprocessing import Preprocessing
 from env.Include.visualizations.ImageReturn import returnImage
 from sqlalchemy import create_engine
 
@@ -16,9 +16,6 @@ app.config.from_object(__name__)
 
 # enable CORS
 CORS(app, resources={r'/*': {'origins': '*'}})
-
-sqlEngine = create_engine('mysql+pymysql://root:password@127.0.0.1/crime_data', pool_recycle=3600)
-connection = sqlEngine.connect()
 
 prepros_obj = Preprocessing()
 data = prepros_obj.final_dataset
