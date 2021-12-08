@@ -138,15 +138,9 @@ class CrimeVisualizations:
     			upper_year = 2020
 		else:
     			upper_year = int(upper_year)
-<<<<<<< HEAD
 
 			
 
-=======
-
-			
-
->>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
 		# Activate figure and update settings
 		fig = plt.figure(figsize=(20, 10))
 		self.seaborn_plot_settings()
@@ -190,7 +184,6 @@ class CrimeVisualizations:
 		if groupby is not None and groupby.lower() == 'month_name': 
 			groupby = 'month_number'
 		# Activate figure and update settings
-<<<<<<< HEAD
 
 		if groupby is None: 
 			groupby = "Year"
@@ -206,23 +199,6 @@ class CrimeVisualizations:
 			upper_year = 2020
 		else:
 			upper_year = int(upper_year)
-=======
-
-		if groupby is None: 
-			groupby = "Year"
-		elif groupby.lower() == 'month_name':
-			groupby = "Month_Name"
-		if lower_year is None:
-    			lower_year = 2016
-		else:
-    			lower_year = int(lower_year)
-		if upper_year is None:
-    			upper_year = 2020
-		else:
-    			upper_year = int(upper_year)
-
-		
->>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
 
 		fig = plt.figure(figsize=(30, 10))
 		self.seaborn_plot_settings()
@@ -290,7 +266,6 @@ class CrimeVisualizations:
 		if inside_outside_flag is None:
 			inside_outside_flag = False
 		if lower_year is None:
-<<<<<<< HEAD
 			lower_year = 2016
 
 		if upper_year is None:
@@ -298,16 +273,6 @@ class CrimeVisualizations:
 	
 		# Activate figure and update settings
 		plt.figure(figsize=(20, 10))
-=======
-    			groupby = 2016
-
-		if upper_year is None:
-    			upper_year = 2020
-		
-
-		# Activate figure and update settings
-		fig = plt.figure(figsize=(20, 10))
->>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
 		self.seaborn_plot_settings()
 
 		# Update dataset based on year filters
@@ -343,7 +308,6 @@ class CrimeVisualizations:
 		string_bytes.seek(0)
 		plot_base64data = base64.b64encode(string_bytes.read())
 		return plot_base64data
-<<<<<<< HEAD
 	
 	def hours_of_day_table(self, lower_year, upper_year, neighborhood, crime_type):
 		df = self.dataset_obj.df_all_params(lower_year, upper_year, neighborhood, crime_type)
@@ -437,44 +401,3 @@ class CrimeVisualizations:
 def test():
 
 	print("All the graphs will be generated for the range [lower, upper].")
-=======
-
-
-def test():
-
-	print("All the graphs will be generated for the range [lower, upper].")
-	lower, upper = map(int, input("Enter the lower year bound and the upper year bound (separated by a space): ").split())
-	# prepros_obj.dataset_path = "E:\Courses\CMSC 636 - Data Visualization\Dataset\Baltimore City\Part1_Crime_data.csv"
-	# prepros_obj.dataset_read('csv')
-	# print(prepros_obj.final_dataset)
-	# prepros_obj = Preprocessing(lower, upper)
-	# prepros_obj.dataset_all_updations()
-	# print(prepros_obj.final_dataset)
-
-	crime_viz = CrimeVisualizations()
-
-	# Visualizations WITH neighborhood filter
-	# dotw_year_noswr = crime_viz.day_of_the_week_boxplot("Year", lower, upper, False, 'Downtown')
-	# dotw_year_swarm = crime_viz.day_of_the_week_boxplot("Year", lower, upper, True, 'Downtown')
-	# in_ou_trends_year = crime_viz.indoor_outdoor_crimes_trends("Year", lower, upper, 'Downtown')
-	# in_ou_trends_mnth = crime_viz.indoor_outdoor_crimes_trends("Month_Number", lower, upper, 'Downtown')
-	# in_ou_trends_week = crime_viz.indoor_outdoor_crimes_trends("WeekNumber", lower, upper, 'Downtown')
-
-	# Visualizations WITHOUT neighborhood filter
-	# dotw_year_noswr = crime_viz.day_of_the_week_boxplot("Year", lower, upper, False)
-	# dotw_year_swarm = crime_viz.day_of_the_week_boxplot("Year", lower, upper, True)
-	# dotw_mnth_noswr = crime_viz.day_of_the_week_boxplot("Month_Name", lower, upper, False)
-	# dotw_mnth_swarm = crime_viz.day_of_the_week_boxplot("Month_Name", lower, upper, True)
-
-	# district_year_noswr = crime_viz.district_wise_boxplot("Year", lower, upper, False)
-	# district_year_swarm = crime_viz.district_wise_boxplot("Year", lower, upper, True)
-	# district_mnth_noswr = crime_viz.district_wise_boxplot("Month_Name", lower, upper, False)
-	# district_mnth_swarm = crime_viz.district_wise_boxplot("Month_Name", lower, upper, True)
-
-	# in_ou_trends_year = crime_viz.indoor_outdoor_crimes_trends("Year", lower, upper)
-	# in_ou_trends_mnth = crime_viz.indoor_outdoor_crimes_trends("Month_Number", lower, upper)
-	# in_ou_trends_week = crime_viz.indoor_outdoor_crimes_trends("WeekNumber", lower, upper)
-
-	# bar_chart_unstckd = crime_viz.district_crime_bar_charts(lower, upper, False)
-	# bar_chart_stacked = crime_viz.district_crime_bar_charts(lower, upper, True)
->>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
