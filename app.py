@@ -1,8 +1,9 @@
+from env.Include.visualizations.CentroidBalt import CentroidBaltimore
 from flask import Flask, jsonify, request
 from flask_cors import CORS
-from Include.visualizations.CrimeVisualizations import CrimeVisualizations
-from Include.visualizations.CrimeCalendar import CrimeCalendar
-from Include.sample.Preprocessing import Preprocessing
+from env.Include.visualizations.CrimeVisualizations import CrimeVisualizations
+from env.Include.visualizations.CrimeCalendar import CrimeCalendar
+from env.Include.sample.Preprocessing import Preprocessing
 from env.Include.visualizations.ImageReturn import returnImage
 from sqlalchemy import create_engine
 
@@ -16,9 +17,6 @@ app.config.from_object(__name__)
 # enable CORS
 CORS(app, resources={r'/*': {'origins': '*'}})
 
-sqlEngine = create_engine('mysql+pymysql://root:password@127.0.0.1/crime_data', pool_recycle=3600)
-connection = sqlEngine.connect()
-
 prepros_obj = Preprocessing()
 data = prepros_obj.final_dataset
 
@@ -27,6 +25,8 @@ c = CrimeCalendar(prepros_obj)
 
 def queryDB(lower, upper, neighborhood, crime_type):
     return prepros_obj.dataset_read_all_params(lower, upper, neighborhood, crime_type);
+
+j = CentroidBaltimore(prepros_obj.df_all_params)
 
 @app.route("/", defaults={"path": ""})
 @app.route("/<string:path>")
@@ -94,6 +94,15 @@ def district_crime_bar_charts():
     upper = int(request.args.get('upper'))
     swarm = bool(request.args.get('swarm'))
     return v.district_crime_bar_charts(lower, upper, swarm)
+
+@app.route('/j/crime_centroid', methods=['GET'])
+def crime_centroid():
+    lower = request.args.get('lower')
+    upper = request.args.get('upper')
+    neighborhood = request.args.get('neighborhood')
+    crime_type = request.args.get('crime_type')
+    return j.getCentroidForParams(lower, upper, neighborhood, crime_type)
+
 
 if __name__ == '__main__':
     app.run(threaded=True)
