@@ -139,7 +139,6 @@ export default {
           this.msg = res.data;
         })
         .catch((error) => {
-          // eslint-disable-next-line
           console.error(error);
         });
     },
@@ -167,7 +166,7 @@ export default {
             promises.push(p);
         }
 
-        //this.$emit('updateMapPoints', this.form)
+        this.$emit('updateMapPoints', this.form)
 
         Promise.all(promises).then((values) => {
             let i = 0
