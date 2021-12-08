@@ -13,7 +13,7 @@
 from sqlalchemy import create_engine
 import pandas as pd
 import numpy as np
-from Include.sample.Preprocessing import Preprocessing
+from Preprocessing import Preprocessing
 
 # Uncomment the following line and insert the CSV file path in the double quotes
 dataset = pd.read_csv("./tData.csv")
@@ -23,7 +23,7 @@ prepros_obj.dataset_all_updations()
 
 
 # Replace "username" with your MySQL username, "database_name" with the name of the database
-sqlEngine = create_engine('mysql+pymysql://root:password@127.0.0.1/crime_data', pool_recycle=10000)
+sqlEngine = create_engine('mysql+pymysql://root:iNsq4A4ECHNwfn0C@34.134.10.145/crime_data', pool_recycle=10000)
 connection = sqlEngine.connect()
 print(connection)
 # Replace "crime_dataset_test" with the name of the table
