@@ -3,10 +3,11 @@ import seaborn as sns
 import io
 import base64
 import pandas as pd
-import plotly.express as px
 import plotly.graph_objects as go
+import chart_studio
+import chart_studio.plotly as py
 
-
+chart_studio.tools.set_credentials_file(username='Jayseown', api_key='38taq5ydOJaCF4rfVlyJ')
 
 class CrimeVisualizations:
 
@@ -393,8 +394,8 @@ class CrimeVisualizations:
             	),
             	bargroupgap=0
         	)
-		fig_bytes = fig.to_image(format="jpg", engine="orca")
-		buf = io.BytesIO(fig_bytes)
+		img_bytes = py.image.get(fig)
+		buf = io.BytesIO(img_bytes)
 		plot_base64data = base64.b64encode(buf.read())
 		return plot_base64data
 
