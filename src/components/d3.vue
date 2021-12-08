@@ -1,7 +1,11 @@
 <template>
   <div>
-    <b-col v-if="!selectedNeighborhood && crimeData" class="align-center">
+    <b-col v-if="!selectedNeighborhood && crimeData.features.length > 0" class="align-center">
+      <div>Test</div>
       <div class="container"></div>
+    </b-col>
+    <b-col v-else>
+      <span> e </span>
     </b-col>
     <b-col v-if="crimeData" v-show="selectedNeighborhood">
       <b-button
@@ -74,15 +78,16 @@ export default {
   watch: {
     crimeData: {
       handler() {
-        console.log("update");
-        if (this.crimeData) {
+        console.log('change')
+        console.log(this.crimeData)
+        if (this.crimeData.features.length > 0) {
           this.generateArc();
         }
       },
     },
     selectedNeighborhood: {
-      handler() {
-        this.updateData();
+      async handler() {
+        await this.updateData();
         if (this.selectedNeighborhood) {
           this.onSelect(this.selectedNeighborhood);
         }
@@ -109,8 +114,9 @@ export default {
           host: process.env.BASE_URL,
         })
         .then((response) => {
+          console.log(response.data)
           if (response) {
-            this.crimeData.features = this.processData(response);
+            this.crimeData.features = this.processData(response.data);
           }
         });
     },
@@ -206,16 +212,16 @@ export default {
           event.preventDefault();
           tooltip.classed("hidden", true);
         })
-        .on("click", (event) => {
+        .on("click", async (event) => {
           event.preventDefault();
           this.selectedNeighborhood = event.target.id;
-          this.updateData();
+          await this.updateData();
           this.onSelect(event.target.id);
         });
 
       crime
         .selectAll("path")
-        .data(this.crimeData)
+        .data(this.crimeData.features)
         .enter()
         .append("path")
         .style("fill", (d) => constData.crimeCodes[d.properties.Description])
