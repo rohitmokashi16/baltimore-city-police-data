@@ -34,7 +34,7 @@ class CrimeVisualizations:
 		"""Checks if the year range is the same as the existing range or not.
 		If not, then updates the class variables.
 		lower: integer, lower bound of year
-		upper: integer, upper bound of year		
+		upper: integer, upper bound of yeear		
 		"""
 
 		flag = False
