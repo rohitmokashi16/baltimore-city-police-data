@@ -62,20 +62,20 @@
         <b-button class="justify-start" @click="getCharts" variant="primary">Update</b-button>
     </b-form>
 
-    <b-card no-body v-if="selected.indexOf('0') !== -1">
+    <b-card no-body v-if="selected.indexOf('0') !== -1 && options[0].img">
         <b-img :src="'data:image/png;base64,'+ options[0].img"/>
     </b-card>
-    <b-card no-body v-if="selected.indexOf('1') !== -1">
+    <b-card no-body v-if="selected.indexOf('1') !== -1 && options[1].img">
         <b-img :src="'data:image/png;base64,'+ options[1].img"/>
     </b-card>
 
-    <b-card no-body v-if="selected.indexOf('2') !== -1">
+    <b-card no-body v-if="selected.indexOf('2') !== -1 && options[2].img">
         <b-img :src="'data:image/png;base64,'+ options[2].img"/>
     </b-card>
-    <b-card no-body v-if="selected.indexOf('3') !== -1">
+    <b-card no-body v-if="selected.indexOf('3') !== -1 && options[3].img">
         <b-img :src="'data:image/png;base64,'+ options[3].img"/>
     </b-card>
-    <b-card no-body v-if="selected.indexOf('4') !== -1">
+    <b-card no-body v-if="selected.indexOf('4') !== -1 && options[4].img">
         <b-img :src="'data:image/png;base64,'+ options[4].img"/>
     </b-card>
 
@@ -89,7 +89,7 @@ import constData from "../constants/d3Constants.js";
 export default {
   name: 'SideBar',
   props: {
-      nieghborhood: String,
+      neighborhood: String,
   },
   data() {
     return {
