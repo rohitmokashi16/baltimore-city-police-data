@@ -12,7 +12,7 @@ class Preprocessing:
 
 		self.final_dataset = None
 		# Replace root, IP address, and dv_testdb with your respective credentials
-		sqlEngine = create_engine('mysql+pymysql://root:password@127.0.0.1/crime_data', pool_recycle=3600)
+		sqlEngine = create_engine('mysql+pymysql://root:iNsq4A4ECHNwfn0C@34.134.10.145/crime_data', pool_recycle=3600)
 		self.connection = sqlEngine.connect()
 
 	def dataset_read(self, year1, year2):

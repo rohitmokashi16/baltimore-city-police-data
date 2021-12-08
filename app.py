@@ -17,10 +17,6 @@ app.config.from_object(__name__)
 # enable CORS
 CORS(app, resources={r'/*': {'origins': '*'}})
 
-sqlEngine = create_engine('mysql+pymysql://root:iNsq4A4ECHNwfn0C@34.134.10.145/crime_data', pool_recycle=3600)
-connection = sqlEngine.connect()
-print(connection)
-
 prepros_obj = Preprocessing()
 data = prepros_obj.final_dataset
 
