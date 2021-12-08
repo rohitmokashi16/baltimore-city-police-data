@@ -393,7 +393,7 @@ class CrimeVisualizations:
             	),
             	bargroupgap=0
         	)
-		fig_bytes = fig.to_image(format="jpg", , engine="orca")
+		fig_bytes = fig.to_image(format="jpg", engine="orca")
 		buf = io.BytesIO(fig_bytes)
 		plot_base64data = base64.b64encode(buf.read())
 		return plot_base64data
