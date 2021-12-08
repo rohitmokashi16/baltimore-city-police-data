@@ -1,5 +1,6 @@
 <template>
   <div>
+<<<<<<< HEAD
     <b-col v-if="!selectedNeighborhood && crimeArray.length > 0" class="align-center">
       <div class="container"></div>
     </b-col>
@@ -13,6 +14,14 @@
         >Back</b-button
       >
       <div id="neighborhood-map" class="align-center"></div>
+=======
+    <b-col v-if="!selectedNeighborhood && crimeData" class="align-center">
+      <div class="container"></div>
+    </b-col>
+    <b-col v-if="crimeData" v-show="selectedNeighborhood">
+      <b-button @click="selectedNeighborhood = null; $router.go()" variant="primary">Back</b-button>
+      <div id="neighborhood-map" class="align-center"> </div>
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
       <div id="neighborhood-container"></div>
     </b-col>
     <b-sidebar
@@ -24,10 +33,14 @@
       shadow
     >
       <div class="mx-3 py-2">
+<<<<<<< HEAD
         <SideGraphs
           @updateMapPoints="updateDataFromSide($event)"
           :neighborhood="selectedNeighborhood"
         />
+=======
+        <SideGraphs @updateMapPoints="updateDataFromSide($event)" :nieghborhood="selectedNeighborhood" />
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
       </div>
     </b-sidebar>
   </div>
@@ -41,10 +54,16 @@ import baltimoreCityGeo from "@/assets/baltimore-city.json";
 import constData from "../constants/d3Constants.js";
 import SideGraphs from "./SideGraphs.vue";
 import L from "leaflet";
+<<<<<<< HEAD
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
 import "leaflet/dist/leaflet.js";
 import _ from "lodash";
+=======
+import axios from 'axios';
+import "leaflet/dist/leaflet.css";
+import "leaflet/dist/leaflet.js";
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
 
 export default {
   name: "D3Impl",
@@ -56,11 +75,15 @@ export default {
       baltimoreCityGeo,
       startDate: 2016,
       endDate: 2020,
+<<<<<<< HEAD
       crimeData: {
         type: "FeatureCollection",
         features: [],
       },
       crimeArray: [],
+=======
+      crimeData: null,
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
       crimeColumns: null,
       sidebarClicked: true,
       crimeTypes: Object.keys(constData.crimeCodes),
@@ -70,6 +93,7 @@ export default {
     };
   },
   async mounted() {
+<<<<<<< HEAD
     await this.updateData(this.selectedNeighborhood);
   },
 
@@ -138,6 +162,54 @@ export default {
 
     onSubmit() {},
 
+=======
+    await this.updateData();
+  },
+
+  watch: {
+    crimeData: {
+      handler () {
+        console.log('update')
+        if (this.crimeData){
+          this.generateArc();
+        }
+      }
+    },
+    selectedNeighborhood: {
+      handler () {
+        this.updateData();
+        if (this.selectedNeighborhood) {
+           this.onSelect(this.selectedNeighborhood)
+        }
+      }
+    }
+  },
+
+  methods: {
+    updateDataFromSide(data) {
+      this.selectedNeighborhood = data.neighborhood2
+      this.startDate = data.startDate
+      this.endDate = data.endDate
+      this.crimeType = data.crimeType
+    },
+    async updateData() {
+       await axios.get('/r/map_data', {params: {
+              lower: this.startDate,
+              upper: this.endDate,
+              crime_type: this.crimeType,
+              neighborhood: this.selectedNeighborhood
+            },
+            host: process.env.BASE_URL}).then(d => {
+              console.log('hit')
+              this.crimeColumns = d.data.columns
+              this.crimeData = d.data.data
+            });
+    },
+
+    onSubmit() {
+    },
+
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
     generateArc() {
       d3.selectAll("svg").remove();
       d3.selectAll(".hidden").remove();
@@ -209,16 +281,28 @@ export default {
           event.preventDefault();
           tooltip.classed("hidden", true);
         })
+<<<<<<< HEAD
         .on("click", async (event) => {
           event.preventDefault();
           this.selectedNeighborhood = event.target.id;
           await this.updateData();
           await this.onSelect(event.target.id);
+=======
+        .on("click", (event) => {
+          event.preventDefault();
+          this.selectedNeighborhood = event.target.id;
+          this.updateData();
+          this.onSelect(event.target.id)
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
         });
 
       crime
         .selectAll("path")
+<<<<<<< HEAD
         .data(this.crimeArray)
+=======
+        .data(this.crimeData)
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
         .enter()
         .append("path")
         .style("fill", (d) => constData.crimeCodes[d.properties.Description])
@@ -252,6 +336,7 @@ export default {
       }
       return returning;
     },
+<<<<<<< HEAD
     async onSelect(neighborhoodName) {
       d3.selectAll("div.neighborhood-container").remove();
       this.sidebarClicked = true;
@@ -261,6 +346,15 @@ export default {
       let tempCrimeData = _.clone(this.crimeArray, true);
       tempCrimeData = tempCrimeData.filter((crime) => {
         if (crime.properties.Neighborhood && neighborhoodName) {
+=======
+    onSelect(neighborhoodName) {
+      this.sidebarClicked = true;
+      // document.getElementById("neighborhood-map").innerHTML = '<div id="neighborhood-container"></div>';
+      this.selectedNeighborhood = neighborhoodName;
+      let tempCrimeData = JSON.parse(JSON.stringify(this.crimeData.features));
+      tempCrimeData = tempCrimeData.filter((crime) => {
+        if (crime.properties.Neighborhood) {
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
           return (
             crime.properties.Neighborhood.toLowerCase() ===
             neighborhoodName.toLowerCase()
@@ -268,6 +362,10 @@ export default {
         }
       });
 
+<<<<<<< HEAD
+=======
+
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
       let map = L.map("neighborhood-container"),
         bwOsmURL = "http://{s}.basemaps.cartocdn.com/light_all/{z}/{x}/{y}.png",
         osmAttrs =
@@ -281,7 +379,11 @@ export default {
 
       let osmTiles = new L.TileLayer(bwOsmURL, {
         minZoom: 14,
+<<<<<<< HEAD
         maxZoom: 19,
+=======
+        maxZoom: 17,
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
         attribution: osmAttrs,
       });
 
@@ -315,6 +417,7 @@ export default {
           return {
             color: "#DC143C",
             opacity: 1,
+<<<<<<< HEAD
             radius: 1.5,
             fillColor: "#DC143C",
             fillOpacity: 0.6,
@@ -337,10 +440,23 @@ export default {
           );
         },
         pointToLayer: (feature, latlng) => {
+=======
+            radius: 0.8,
+            fillColor: "#dedede",
+            fillOpacity: 0.7,
+          };
+        },
+        onEachFeature: (feature, layer) => {
+          layer.bindPopup(feature.properties.Location);
+        },
+        pointToLayer: (feature, latlng) => {
+          console.log(feature.properties.Location);
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
           return L.circleMarker(latlng);
         },
       }).addTo(map);
     },
+<<<<<<< HEAD
     getFormattedDateTime(crimeDateTime) {
       const dateTime = new Date(crimeDateTime);
       const dateTimeString =
@@ -360,6 +476,8 @@ export default {
         dateTime.getSeconds();
       return dateTimeString;
     },
+=======
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
     getCenterOfPolygon(polyData) {
       let latitudes = polyData[0].geometry.coordinates[0].map(
         (latlon) => latlon[1]

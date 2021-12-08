@@ -53,7 +53,10 @@
                             <b-form-checkbox value=1>Crimes by Week Day</b-form-checkbox>
                             <b-form-checkbox value=2>Crimes Indoors vs Outdoors</b-form-checkbox>
                             <b-form-checkbox value=3>Calendar</b-form-checkbox>
+<<<<<<< HEAD
                             <b-form-checkbox value=4>Crimes by Hour</b-form-checkbox>
+=======
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
                         </b-form-checkbox-group>
                     </b-form-group>
                 </b-card-body>
@@ -62,6 +65,7 @@
         <b-button class="justify-start" @click="getCharts" variant="primary">Update</b-button>
     </b-form>
 
+<<<<<<< HEAD
     <b-card no-body v-if="selected.indexOf('0') !== -1 && options[0].img">
         <b-img :src="'data:image/png;base64,'+ options[0].img"/>
     </b-card>
@@ -78,6 +82,21 @@
     <b-card no-body v-if="selected.indexOf('4') !== -1 && options[4].img">
         <b-img :src="'data:image/png;base64,'+ options[4].img"/>
     </b-card>
+=======
+    <b-card no-body v-if="selected.indexOf('0') !== -1">
+        <b-img :src="'data:image/png;base64,'+ options[0].img"/>
+    </b-card>
+    <b-card no-body v-if="selected.indexOf('1') !== -1">
+        <b-img :src="'data:image/png;base64,'+ options[1].img"/>
+    </b-card>
+
+    <b-card no-body v-if="selected.indexOf('2') !== -1">
+        <b-img :src="'data:image/png;base64,'+ options[2].img"/>
+    </b-card>
+    <b-card no-body v-if="selected.indexOf('3') !== -1">
+        <b-img :src="'data:image/png;base64,'+ options[3].img"/>
+    </b-card>
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
 
   </b-col>
 </template>
@@ -89,7 +108,11 @@ import constData from "../constants/d3Constants.js";
 export default {
   name: 'SideBar',
   props: {
+<<<<<<< HEAD
       neighborhood: String,
+=======
+      nieghborhood: String,
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
   },
   data() {
     return {
@@ -98,8 +121,12 @@ export default {
           { text: ' Centroid Map', url: '/j/crime_centroid', value: 0, img: null },
           { text: ' Crimes by Week Day', url: '/v/day_of_the_week_boxplot', value: 1, img: null },
           { text: ' Crimes Indoors vs Outdoors', url: '/v/indoor_outdoor_crimes_trends', value: 2, img: null },
+<<<<<<< HEAD
           { text: ' Calendar', url: '/d/crime_calendar', value: 3, img: null },
           { text: ' Crimes by Hour', url: '/p/hours_plot', value: 4, img: null }
+=======
+          { text: ' Calendar', url: '/d/crime_calendar', value: 3, img: null }
+>>>>>>> bdc3622bf12830aa910f7bd9b498322120762f34
         ],
         visible1: true,
         visible: true,
