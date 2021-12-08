@@ -4,7 +4,6 @@ cffi==1.15.0
 click==8.0.3
 click-plugins==1.1.1
 cligj==0.7.2
-awefa
 colorama==0.4.4
 cryptography==36.0.0
 cycler==0.11.0
