@@ -12,7 +12,9 @@ class Preprocessing:
 
 		self.final_dataset = None
 		# Replace root, IP address, and dv_testdb with your respective credentials
-		sqlEngine = create_engine('mysql+pymysql://root:iNsq4A4ECHNwfn0C@34.134.10.145/crime_data', pool_recycle=3600)
+		# sqlEngine = create_engine('mysql+pymysql://root:iNsq4A4ECHNwfn0C@34.134.10.145/crime_data', pool_recycle=3600)
+		sqlEngine = create_engine('mysql+pymysql://root:password@127.0.0.1/crime_data', pool_recycle=3600)
+
 		self.connection = sqlEngine.connect()
 
 	def dataset_read(self, year1, year2):
@@ -28,13 +30,13 @@ class Preprocessing:
 	def dataset_read_all_params(self, year1, year2, neighborhood, crime_type):	
 		sql_query = ''
 		if neighborhood is not None and crime_type is not None:
-			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Description = "{crime_type}" and Neighborhood = "{neighborhood}"'
+			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Description = "{crime_type}" and Neighborhood = "{neighborhood}" and Latitude is not null and Longitude is not null'
 		elif crime_type is not None:
-			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Description = "{crime_type}"'
+			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Description = "{crime_type}" and Latitude is not null and Longitude is not null'
 		elif neighborhood is not None: 
-			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Neighborhood = "{neighborhood}"'
+			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Neighborhood = "{neighborhood}" and Latitude is not null and Longitude is not null'
 		else:
-			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) LIMIT 500'
+			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Latitude is not null and Longitude is not null LIMIT 500 '
 		
 		df = pd.read_sql(sql_query, con = self.connection)
 		return df.to_dict(orient="index")
@@ -48,7 +50,7 @@ class Preprocessing:
 		elif neighborhood is not None: 
 			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Neighborhood = "{neighborhood}" AND Latitude > 39.18 AND Latitude < 39.38 AND Longitude < -76.52 AND Longitude > -76.72'
 		else:
-			sql_query = f'select *, SELECT COUNT(DISTINCT Date) as numInci from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Latitude > 39.18 AND Latitude < 39.38 AND Longitude < -76.52 AND Longitude > -76.72 LIMIT 500'
+			sql_query = f'select * from crime_data where (year(CrimeDateTime) between {year1} and {year2}) and Latitude > 39.18 AND Latitude < 39.38 AND Longitude < -76.52 AND Longitude > -76.72 LIMIT 500'
 		
 		return pd.read_sql(sql_query, con = self.connection)
 		

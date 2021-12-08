@@ -2,6 +2,9 @@ import matplotlib.pyplot as plt
 import seaborn as sns
 import io
 import base64
+import pandas as pd
+import plotly.express as px
+import plotly.graph_objects as go
 
 
 class CrimeVisualizations:
@@ -185,16 +188,16 @@ class CrimeVisualizations:
 			groupby = "Year"
 		elif groupby.lower() == 'month_name':
 			groupby = "Month_Name"
-		if lower_year is None:
-    			lower_year = 2016
-		else:
-    			lower_year = int(lower_year)
-		if upper_year is None:
-    			upper_year = 2020
-		else:
-    			upper_year = int(upper_year)
-
 		
+		if lower_year is None:
+			lower_year = 2016
+		else:
+			lower_year = int(lower_year)
+	
+		if upper_year is None:
+			upper_year = 2020
+		else:
+			upper_year = int(upper_year)
 
 		fig = plt.figure(figsize=(30, 10))
 		self.seaborn_plot_settings()
@@ -262,14 +265,13 @@ class CrimeVisualizations:
 		if inside_outside_flag is None:
 			inside_outside_flag = False
 		if lower_year is None:
-    			groupby = 2016
+			lower_year = 2016
 
 		if upper_year is None:
-    			upper_year = 2020
-		
-
+			upper_year = 2020
+	
 		# Activate figure and update settings
-		fig = plt.figure(figsize=(20, 10))
+		plt.figure(figsize=(20, 10))
 		self.seaborn_plot_settings()
 
 		# Update dataset based on year filters
@@ -305,42 +307,96 @@ class CrimeVisualizations:
 		string_bytes.seek(0)
 		plot_base64data = base64.b64encode(string_bytes.read())
 		return plot_base64data
+	
+	def hours_of_day_table(self, lower_year, upper_year, neighborhood, crime_type):
+		df = self.dataset_obj.df_all_params(lower_year, upper_year, neighborhood, crime_type)
 
+		df['Hours'] = df['CrimeDateTime'].astype(str).str.slice(11, 13)
+		df['Hours'] = pd.to_numeric(df['Hours'], downcast='integer')
+		
+		pd.options.display.float_format = '{:,.0f}'.format
+
+        #print (df[100:1200])
+		df_grouped = df.groupby(
+			['Hours', 'Description']).size().reset_index(name='Counts')
+		data = df_grouped.pivot_table(
+			'Counts', ['Hours'], 'Description').reset_index()
+		#print (data)
+		data["Hours"] = data["Hours"].astype(int)
+		data["Hours"] = data["Hours"].astype(str)
+		# data["Test"] = data["Counts"]-250
+
+		return self.crimes_per_hour_viz(df_grouped, data, crime_type is None)
+
+	def crimes_per_hour_viz(self, data, grouped, static):
+        # Update dataset based on year filters
+		fig = go.Figure()
+		categories = []
+		rgb_colors = ["rgb(15,76,129)", "rgb(92,144,144)", "rgb(165,178,181)", "rgb(191,208,202)",
+                      "rgb(237,202,190)", "rgb(245,177,156)", "rgb(255,162,157)", "rgb(145,88,88)"]
+		radius = 0
+		if static is True:
+			categories = ["Theft, Larceny & Robbery", "Assault, Homicide & Rape", "Arson & Shooting"]
+			grouped["Assault, Homicide & Rape"] = grouped["AGG. ASSAULT"] + grouped["COMMON ASSAULT"] + grouped["RAPE"]
+			grouped["Arson & Shooting"] = grouped["SHOOTING"] + grouped["ARSON"]
+			grouped["Theft, Larceny & Robbery"] = grouped["AUTO THEFT"] + grouped["BURGLARY"] + grouped["LARCENY"] + grouped["LARCENY FROM AUTO"] + grouped["ROBBERY - CARJACKING"] + grouped["ROBBERY - COMMERCIAL"] + grouped["ROBBERY - RESIDENCE"] + grouped["ROBBERY - STREET"]
+			# Choose the best 8 categories
+			for i in range(0, len(categories)):
+				radius += max(grouped[categories[i]])
+				if i < len(rgb_colors):
+					fig.add_trace(go.Barpolar(
+	                   		r=grouped[categories[i]],
+	                   		name=categories[i],
+	                   		marker_color=rgb_colors[i],
+	                   		theta=grouped['Hours']
+					))
+			fig.update_traces(text=grouped['Hours'].tolist())
+			fig.update_layout(title='Crimes per Hour of Day', title_x=0.5, font_size=22,
+          		legend=dict(yanchor="top",y=0.99,xanchor="left",x=0.75),
+            	legend_font_size=18,
+            	template='plotly_dark',
+            	polar=dict(
+                	radialaxis=dict(range=[0, radius + 4]),
+                	angularaxis=dict(showticklabels=True, showgrid=True, showline=True,
+					rotation=90, direction="clockwise", tickfont_size=16)
+            ),
+            bargroupgap=0
+            # showgrid=False
+        )
+		else:
+			radius = max(data["Counts"])
+
+			fig.add_trace(go.Barpolar(
+				r=data["Counts"],
+				name=data["Description"][0],
+				marker_color=rgb_colors[0],
+				theta=grouped['Hours']
+				))
+			fig.update_traces(text=grouped['Hours'].tolist())
+			fig.update_layout(
+				title='Crimes per Hour of Day',
+            	title_x=0.5,
+            	font_size=22,
+            	legend=dict(
+                	yanchor="top",
+                	y=0.99,
+               		xanchor="left",
+                	x=0.75
+            	),
+            	legend_font_size=18,
+            	template='plotly_dark',
+            	polar=dict(
+                	radialaxis=dict(range=[0, radius + 4]),
+                	angularaxis=dict(showticklabels=True, showgrid=True, showline=True,
+                                 rotation=90, direction="clockwise", tickfont_size=16)
+            	),
+            	bargroupgap=0
+        	)
+		fig_bytes = fig.to_image(format="jpg")
+		buf = io.BytesIO(fig_bytes)
+		plot_base64data = base64.b64encode(buf.read())
+		return plot_base64data
 
 def test():
 
 	print("All the graphs will be generated for the range [lower, upper].")
-	lower, upper = map(int, input("Enter the lower year bound and the upper year bound (separated by a space): ").split())
-	# prepros_obj.dataset_path = "E:\Courses\CMSC 636 - Data Visualization\Dataset\Baltimore City\Part1_Crime_data.csv"
-	# prepros_obj.dataset_read('csv')
-	# print(prepros_obj.final_dataset)
-	# prepros_obj = Preprocessing(lower, upper)
-	# prepros_obj.dataset_all_updations()
-	# print(prepros_obj.final_dataset)
-
-	crime_viz = CrimeVisualizations()
-
-	# Visualizations WITH neighborhood filter
-	# dotw_year_noswr = crime_viz.day_of_the_week_boxplot("Year", lower, upper, False, 'Downtown')
-	# dotw_year_swarm = crime_viz.day_of_the_week_boxplot("Year", lower, upper, True, 'Downtown')
-	# in_ou_trends_year = crime_viz.indoor_outdoor_crimes_trends("Year", lower, upper, 'Downtown')
-	# in_ou_trends_mnth = crime_viz.indoor_outdoor_crimes_trends("Month_Number", lower, upper, 'Downtown')
-	# in_ou_trends_week = crime_viz.indoor_outdoor_crimes_trends("WeekNumber", lower, upper, 'Downtown')
-
-	# Visualizations WITHOUT neighborhood filter
-	# dotw_year_noswr = crime_viz.day_of_the_week_boxplot("Year", lower, upper, False)
-	# dotw_year_swarm = crime_viz.day_of_the_week_boxplot("Year", lower, upper, True)
-	# dotw_mnth_noswr = crime_viz.day_of_the_week_boxplot("Month_Name", lower, upper, False)
-	# dotw_mnth_swarm = crime_viz.day_of_the_week_boxplot("Month_Name", lower, upper, True)
-
-	# district_year_noswr = crime_viz.district_wise_boxplot("Year", lower, upper, False)
-	# district_year_swarm = crime_viz.district_wise_boxplot("Year", lower, upper, True)
-	# district_mnth_noswr = crime_viz.district_wise_boxplot("Month_Name", lower, upper, False)
-	# district_mnth_swarm = crime_viz.district_wise_boxplot("Month_Name", lower, upper, True)
-
-	# in_ou_trends_year = crime_viz.indoor_outdoor_crimes_trends("Year", lower, upper)
-	# in_ou_trends_mnth = crime_viz.indoor_outdoor_crimes_trends("Month_Number", lower, upper)
-	# in_ou_trends_week = crime_viz.indoor_outdoor_crimes_trends("WeekNumber", lower, upper)
-
-	# bar_chart_unstckd = crime_viz.district_crime_bar_charts(lower, upper, False)
-	# bar_chart_stacked = crime_viz.district_crime_bar_charts(lower, upper, True)
