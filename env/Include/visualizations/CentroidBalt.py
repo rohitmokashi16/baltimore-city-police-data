@@ -1,7 +1,7 @@
 import pandas as pd
 import matplotlib.pyplot as plt
 import geopandas as gpd
-from shapely.geometry import Point, Polygon
+from shapely.geometry import Point
 from sklearn.cluster import KMeans
 import base64
 import numpy as np

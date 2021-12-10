@@ -54,6 +54,14 @@ def v_day_of_the_week_boxplot():
     neighborhood = request.args.get('neighborhood')
     return v.day_of_the_week_boxplot(year_or_month, lower, upper, swarm, neighborhood, crime_type)
 
+@app.route('/p/hours_plot', methods=['GET'])
+def p_hours():
+    lower = request.args.get('lower')
+    upper = request.args.get('upper')
+    crime_type = request.args.get('crime_type')
+    neighborhood = request.args.get('neighborhood')
+    return v.hours_of_day_table(lower, upper, neighborhood, crime_type)
+
 @app.route('/v/district_wise_boxplot', methods=['GET'])
 def v_district_wise_boxplot():
     year_or_month = request.args.get('ym')

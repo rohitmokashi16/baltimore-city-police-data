@@ -1,24 +1,12 @@
 <template>
-<div>
-    <b-tabs content-class="mt-3">
-         <b-tab no-body title="By Neighborhood">
-           <D3Impl/>
-          </b-tab>
-
-      <b-tab no-body title="Citywide">
-          <Matplotlib/>
-      </b-tab>
-
-        </b-tabs>
-    </div>
+  <D3Impl/>
 </template>
 
 <script>
 import D3Impl from './d3.vue';
-import Matplotlib from './matplotlib.vue'
 
 export default {
-  components: {D3Impl, Matplotlib},
+  components: {D3Impl},
 }
 </script>
 

@@ -1,6 +1,6 @@
 <template>
   <div>
-    <b-col v-if="!selectedNeighborhood && crimeData" class="align-center">
+    <b-col v-if="!selectedNeighborhood && crimeArray.length > 0" class="align-center">
       <div class="container"></div>
     </b-col>
     <b-col v-if="crimeData" v-show="selectedNeighborhood">
@@ -26,7 +26,7 @@
       <div class="mx-3 py-2">
         <SideGraphs
           @updateMapPoints="updateDataFromSide($event)"
-          :nieghborhood="selectedNeighborhood"
+          :neighborhood="selectedNeighborhood"
         />
       </div>
     </b-sidebar>
@@ -44,6 +44,7 @@ import L from "leaflet";
 import axios from "axios";
 import "leaflet/dist/leaflet.css";
 import "leaflet/dist/leaflet.js";
+import _ from "lodash";
 
 export default {
   name: "D3Impl",
@@ -59,6 +60,7 @@ export default {
         type: "FeatureCollection",
         features: [],
       },
+      crimeArray: [],
       crimeColumns: null,
       sidebarClicked: true,
       crimeTypes: Object.keys(constData.crimeCodes),
@@ -68,49 +70,50 @@ export default {
     };
   },
   async mounted() {
-    await this.updateData();
+    await this.updateData(this.selectedNeighborhood);
+  },
+
+  updated () {
+    this.generateArc()
   },
 
   watch: {
-    crimeData: {
+    crimeArray: {
       handler() {
-        console.log("update");
-        if (this.crimeData) {
-          this.generateArc();
-        }
+        console.log('change')
+        this.generateArc()
       },
     },
     selectedNeighborhood: {
-      handler() {
-        this.updateData();
-        if (this.selectedNeighborhood) {
-          this.onSelect(this.selectedNeighborhood);
-        }
+      async handler() {
+        console.log(this.selectedNeighborhood)      
       },
     },
   },
 
   methods: {
-    updateDataFromSide(data) {
+    async updateDataFromSide(data) {
       this.selectedNeighborhood = data.neighborhood2;
       this.startDate = data.startDate;
       this.endDate = data.endDate;
       this.crimeType = data.crimeType;
+      await this.onSelect(data.neighborhood2);
     },
-    async updateData() {
+    async updateData(neighborhood) {
       await axios
         .get("/r/map_data", {
           params: {
             lower: this.startDate,
             upper: this.endDate,
             crime_type: this.crimeType,
-            neighborhood: this.selectedNeighborhood,
+            neighborhood: neighborhood,
           },
           host: process.env.BASE_URL,
         })
         .then((response) => {
           if (response) {
-            this.crimeData.features = this.processData(response);
+           // d3.selectAll("div.neighborhood-container").remove();
+            this.crimeArray = this.processData(response.data);
           }
         });
     },
@@ -206,16 +209,16 @@ export default {
           event.preventDefault();
           tooltip.classed("hidden", true);
         })
-        .on("click", (event) => {
+        .on("click", async (event) => {
           event.preventDefault();
           this.selectedNeighborhood = event.target.id;
-          this.updateData();
-          this.onSelect(event.target.id);
+          await this.updateData();
+          await this.onSelect(event.target.id);
         });
 
       crime
         .selectAll("path")
-        .data(this.crimeData)
+        .data(this.crimeArray)
         .enter()
         .append("path")
         .style("fill", (d) => constData.crimeCodes[d.properties.Description])
@@ -249,13 +252,15 @@ export default {
       }
       return returning;
     },
-    onSelect(neighborhoodName) {
+    async onSelect(neighborhoodName) {
+      d3.selectAll("div.neighborhood-container").remove();
       this.sidebarClicked = true;
-      // document.getElementById("neighborhood-map").innerHTML = '<div id="neighborhood-container"></div>';
+      document.getElementById("neighborhood-map").innerHTML = '<div id="neighborhood-container"></div>';
       this.selectedNeighborhood = neighborhoodName;
-      let tempCrimeData = JSON.parse(JSON.stringify(this.crimeData.features));
+      await this.updateData(this.selectedNeighborhood)
+      let tempCrimeData = _.clone(this.crimeArray, true);
       tempCrimeData = tempCrimeData.filter((crime) => {
-        if (crime.properties.Neighborhood) {
+        if (crime.properties.Neighborhood && neighborhoodName) {
           return (
             crime.properties.Neighborhood.toLowerCase() ===
             neighborhoodName.toLowerCase()
@@ -332,7 +337,6 @@ export default {
           );
         },
         pointToLayer: (feature, latlng) => {
-          console.log(feature.properties.Location);
           return L.circleMarker(latlng);
         },
       }).addTo(map);
