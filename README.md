@@ -22,3 +22,8 @@ npm run lint
 
 ### Customize configuration
 See [Configuration Reference](https://cli.vuejs.org/config/).
+
+### Motivation
+The motivation behind this proposal is to use visualization to better understand
+the crime, arrests, traffic stops, and service calls to provide insight into more
+effective policing for the city of Baltimore.
