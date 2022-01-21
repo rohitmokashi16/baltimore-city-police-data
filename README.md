@@ -40,3 +40,10 @@ Several visualization techniques will be employed to thoroughly illustrate and
 explore the evolutionary tendency and incident patterns spatially and temporarily.
 Then, we will apply one or two technologies for the final release. Considering the geographic nature of the crime incidents, an interactive
 map of Baltimore City will be used for geo-spatial visualization.
+
+### Roles of participants
+ Dingyi Pei: Matlab programmer, Data Analyst (Tableau)
+ Jason Seaman: Web Developer, Data Analyst (Tableau)
+ Paul Ledala: Python Developer, Data Engineer
+ Rohit Mokashi: Web Developer, D3.js, Data Analyst (Tableau)
+ Vineeth NC: Data Engineer, Python Programmer
