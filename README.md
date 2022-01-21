@@ -42,9 +42,8 @@ Then, we will apply one or two technologies for the final release. Considering t
 map of Baltimore City will be used for geo-spatial visualization.
 
 ### Roles of participants
-***
-*Dingyi Pei: Matlab programmer, Data Analyst (Tableau)
-*Jason Seaman: Web Developer, Data Analyst (Tableau)
-*Paul Ledala: Python Developer, Data Engineer
-*Rohit Mokashi: Web Developer, D3.js, Data Analyst (Tableau)
-*Vineeth NC: Data Engineer, Python Programmer
+* Dingyi Pei: Matlab programmer, Data Analyst (Tableau)
+* Jason Seaman: Web Developer, Data Analyst (Tableau)
+* Paul Ledala: Python Developer, Data Engineer
+* Rohit Mokashi: Web Developer, D3.js, Data Analyst (Tableau)
+* Vineeth NC: Data Engineer, Python Programmer
