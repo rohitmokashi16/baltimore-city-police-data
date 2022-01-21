@@ -38,4 +38,5 @@ analyzing trends in crime between neighborhoods of income inequality.
 ### Visualization Approaches
 Several visualization techniques will be employed to thoroughly illustrate and
 explore the evolutionary tendency and incident patterns spatially and temporarily.
-Then, we will apply one or two technologies for the final release.
+Then, we will apply one or two technologies for the final release. Considering the geographic nature of the crime incidents, an interactive
+map of Baltimore City will be used for geo-spatial visualization.
