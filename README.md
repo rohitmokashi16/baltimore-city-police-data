@@ -49,6 +49,10 @@ map of Baltimore City will be used for geo-spatial visualization.
 * Vineeth NC: Data Engineer, Python Programmer
 
 ### Visualizations
-* Map of municipal bounds of Baltimore city in the main view. The varied colored spots represent different types of the crime happened and recorded by Baltimore Police Department. 
+* Map of municipal bounds of Baltimore city in the main view. The varied colored spots represent different types of the crime happened and recorded by Baltimore Police Department.
 
 ![Baltimore city map with crime points](https://github.com/rohitmokashi16/baltimore-city-police-data/blob/main/visualizations/screenshot-1.png)
+
+* The view of dashboard with parameter selection and visualization plotted.
+
+![Neighborhood view with crime points](https://github.com/rohitmokashi16/baltimore-city-police-data/blob/main/visualizations/screenshot-3.png)
