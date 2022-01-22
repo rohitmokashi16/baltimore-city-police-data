@@ -56,3 +56,19 @@ map of Baltimore City will be used for geo-spatial visualization.
 * The view of dashboard with parameter selection and visualization plotted.
 
 ![Neighborhood view with crime points](https://github.com/rohitmokashi16/baltimore-city-police-data/blob/main/visualizations/screenshot-3.png)
+
+* Monthly averaged crimes happened on different districts of Baltimore city in 2019. The incidents are illustrated as a box plot, showing the averaged incidents over month as well as the range of number of crimes.
+
+![Incidents by district grouped by month](https://github.com/rohitmokashi16/baltimore-city-police-data/blob/main/visualizations/screenshot-4.png)
+
+* Monthly averaged crimes happened on different districts of Baltimore city in 2019. The incidents are illustrated as a bar chart, showing the total numbers of incidents happened over month.
+
+![Bar chart of incident count by districts](https://github.com/rohitmokashi16/baltimore-city-police-data/blob/main/visualizations/screenshot-5.png)
+
+* Monthly averaged crimes happened indoors/outdoors of Baltimore city in 2019. The incidents are illustrated as a line chart, showing the tendency of the total numbers of incidents happened over month.
+
+![Bar chart of incident count by districts](https://github.com/rohitmokashi16/baltimore-city-police-data/blob/main/visualizations/screenshot-7.png)
+
+* Incident heatmap calendar of year 2016. The total number of happened each day is represented as a heatmap in a calendar, providing a general view of the amount of the crime over a year.
+
+![Bar chart of incident count by districts](https://github.com/rohitmokashi16/baltimore-city-police-data/blob/main/visualizations/screenshot-9.png)
