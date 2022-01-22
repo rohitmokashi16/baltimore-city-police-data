@@ -47,3 +47,6 @@ map of Baltimore City will be used for geo-spatial visualization.
 * Paul Ledala: Python Developer, Data Engineer
 * Rohit Mokashi: Web Developer, D3.js, Data Analyst (Tableau)
 * Vineeth NC: Data Engineer, Python Programmer
+
+### Visualizations
+![Map of municipal bounds of Baltimore city in the main view. The varied colored spots represent different types of the crime happened and recorded by Baltimore Police Department.](https://github.com/rohitmokashi16/baltimore-city-police-data/blob/main/visualizations/screenshot-1.png)
